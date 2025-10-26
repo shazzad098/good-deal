@@ -1,0 +1,32 @@
+# Node modules
+client/node_modules/
+server/node_modules/
+
+# Build output
+client/build/
+client/dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment files
+server/.env
+client/.env
+
+# IDE/editor configs
+.idea/
+.vscode/
+
+# Dependency lock files (optional if using only one)
+client/package-lock.json
+server/package-lock.json
+
+# Database seed/output (if any)
+server/seed-output.json
