@@ -1,56 +1,17 @@
+// server/routes/products.js
 const express = require('express');
+const router = express.Router();
 const Product = require('../models/Product');
 
-const router = express.Router();
-
-// Get all products (Public)
+// Get all products
 router.get('/', async (req, res) => {
     try {
-        const { category, search } = req.query;
-
-        let query = { isActive: true };
-        if (category) query.category = category;
-        if (search) {
-            query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } }
-            ];
-        }
-
-        const products = await Product.find(query).sort({ createdAt: -1 });
-
+        const products = await Product.find({});
         res.json({
             success: true,
-            products,
-            total: products.length
+            products: products
         });
     } catch (error) {
-        console.error('Get products error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error fetching products'
-        });
-    }
-});
-
-// Get single product (Public)
-router.get('/:id', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            product
-        });
-    } catch (error) {
-        console.error('Get product error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -58,56 +19,42 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Create product (Admin)
-router.post('/', async (req, res) => {
+// Add new product (Admin only)
+router.post('/admin/products', async (req, res) => {
     try {
-        const productData = req.body;
-
-        const product = new Product(productData);
+        const product = new Product(req.body);
         await product.save();
 
         res.status(201).json({
             success: true,
-            message: 'Product created successfully',
-            product
+            product: product
         });
     } catch (error) {
-        console.error('Create product error:', error);
-        res.status(500).json({
+        res.status(400).json({
             success: false,
-            message: 'Error creating product',
-            error: error.message
+            message: error.message
         });
     }
 });
 
-// Update product (Admin)
-router.put('/:id', async (req, res) => {
+// Get single product
+router.get('/:id', async (req, res) => {
     try {
-        const product = await Product.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
-
+        const product = await Product.findById(req.params.id);
         if (!product) {
             return res.status(404).json({
                 success: false,
                 message: 'Product not found'
             });
         }
-
         res.json({
             success: true,
-            message: 'Product updated successfully',
-            product
+            product: product
         });
     } catch (error) {
-        console.error('Update product error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error updating product',
-            error: error.message
+            message: 'Server error'
         });
     }
 });

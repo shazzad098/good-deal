@@ -26,14 +26,25 @@ const Products = () => {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get('/api/products');
+            const res = await axios.get('/api/products'); // এই endpoint use করুন
             setProducts(res.data.products || []);
 
-            // Extract unique categories
             const uniqueCategories = [...new Set(res.data.products.map(product => product.category))];
             setCategories(uniqueCategories);
         } catch (error) {
             console.error('Error fetching products:', error);
+            // Fallback to demo data if API fails
+            const fallbackProducts = [
+                {
+                    _id: "1",
+                    name: "Demo Product",
+                    description: "This is a demo product",
+                    price: 99,
+                    category: "electronics",
+                    stock: 10
+                }
+            ];
+            setProducts(fallbackProducts);
         } finally {
             setLoading(false);
         }

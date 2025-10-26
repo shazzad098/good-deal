@@ -1,60 +1,67 @@
+// server/seed.js
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 require('dotenv').config();
 
-const sampleProducts = [
+const demoProducts = [
     {
-        name: "Samsung Galaxy S23",
-        description: "Latest Samsung smartphone with advanced features",
-        price: 899.99,
+        name: "Wireless Bluetooth Headphones",
+        description: "High-quality wireless headphones with noise cancellation",
+        price: 99.99,
+        originalPrice: 129.99,
         category: "electronics",
-        subcategory: "mobile",
-        brand: "Samsung",
-        images: ["https://via.placeholder.com/300"],
+        brand: "SoundMax",
         stock: 50,
-        specifications: {
-            "Screen": "6.1 inch",
-            "RAM": "8GB",
-            "Storage": "128GB",
-            "Camera": "50MP"
-        },
-        features: ["5G", "Fast Charging", "Water Resistant"]
+        images: ["/images/headphones.jpg"],
+        features: ["Noise Cancellation", "30hr Battery", "Fast Charging"]
     },
     {
-        name: "Nike Air Max",
-        description: "Comfortable running shoes",
-        price: 129.99,
+        name: "Smartphone X Pro",
+        description: "Latest smartphone with advanced camera and processor",
+        price: 899.99,
+        category: "electronics",
+        brand: "TechBrand",
+        stock: 25,
+        images: ["/images/phone.jpg"],
+        features: ["5G", "128GB Storage", "Triple Camera"]
+    },
+    {
+        name: "Cotton T-Shirt",
+        description: "Comfortable 100% cotton t-shirt for everyday wear",
+        price: 19.99,
         category: "clothing",
-        subcategory: "shoes",
-        brand: "Nike",
-        images: ["https://via.placeholder.com/300"],
+        brand: "FashionWear",
         stock: 100,
-        specifications: {
-            "Size": "Available 7-12",
-            "Color": "Black/White",
-            "Material": "Mesh"
-        },
-        features: ["Air Cushion", "Breathable", "Lightweight"]
+        images: ["/images/tshirt.jpg"],
+        features: ["100% Cotton", "Machine Wash", "Multiple Colors"]
+    },
+    {
+        name: "Laptop Backpack",
+        description: "Durable backpack with laptop compartment and water resistance",
+        price: 49.99,
+        originalPrice: 69.99,
+        category: "electronics",
+        brand: "TravelGear",
+        stock: 30,
+        images: ["/images/backpack.jpg"],
+        features: ["Laptop Compartment", "Water Resistant", "Multiple Pockets"]
     }
 ];
 
 const seedDatabase = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gooddeal');
-        console.log('Connected to MongoDB');
 
         // Clear existing products
         await Product.deleteMany({});
-        console.log('Cleared existing products');
 
-        // Add sample products
-        await Product.insertMany(sampleProducts);
-        console.log('Sample products added');
+        // Add demo products
+        await Product.insertMany(demoProducts);
 
-        console.log('Database seeded successfully');
+        console.log('Demo products added successfully!');
         process.exit(0);
     } catch (error) {
-        console.error('Seeding error:', error);
+        console.error('Error seeding database:', error);
         process.exit(1);
     }
 };

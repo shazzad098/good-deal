@@ -1,253 +1,285 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+// client/src/components/products/Products.js
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getProducts } from '../../actions/productActions';
-import ProductItem from './ProductItem';
+import axios from 'axios';
 import './Products.css';
 
 const Products = () => {
-    const dispatch = useDispatch();
-    const { products, loading } = useSelector(state => state.products);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [sortBy, setSortBy] = useState('newest');
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const [filters, setFilters] = useState({
-        category: '',
-        search: '',
-        sort: 'newest',
-        priceRange: 'all',
-        page: 1
-    });
-
-    const [showFilters, setShowFilters] = useState(false);
+    const { user, isAuthenticated } = useSelector(state => state.auth);
 
     useEffect(() => {
-        dispatch(getProducts(filters));
-    }, [dispatch, filters]);
+        fetchProducts();
+    }, []);
 
-    const handleFilterChange = (e) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.value,
-            page: 1
-        });
+    useEffect(() => {
+        filterAndSortProducts();
+    }, [products, selectedCategory, sortBy, searchTerm]);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get('http://localhost:5000/api/products');
+            console.log('API Response:', res.data); // Debugging
+            setProducts(res.data.products || []);
+
+            // Extract unique categories
+            const uniqueCategories = [...new Set(res.data.products.map(product => product.category))];
+            setCategories(['all', ...uniqueCategories]);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            // Fallback to empty array if API fails
+            setProducts([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filterAndSortProducts = () => {
+        let filtered = products;
+
+        // Filter by category
+        if (selectedCategory !== 'all') {
+            filtered = filtered.filter(product => product.category === selectedCategory);
+        }
+
+        // Filter by search term
+        if (searchTerm) {
+            filtered = filtered.filter(product =>
+                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        // Sort products
+        switch (sortBy) {
+            case 'price-low':
+                filtered = [...filtered].sort((a, b) => a.price - b.price);
+                break;
+            case 'price-high':
+                filtered = [...filtered].sort((a, b) => b.price - a.price);
+                break;
+            case 'name':
+                filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'newest':
+            default:
+                filtered = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+        }
+
+        setFilteredProducts(filtered);
+    };
+
+    const handleCategoryChange = (category) => {
+        setSelectedCategory(category);
+    };
+
+    const handleSortChange = (e) => {
+        setSortBy(e.target.value);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
     };
 
     const clearFilters = () => {
-        setFilters({
-            category: '',
-            search: '',
-            sort: 'newest',
-            priceRange: 'all',
-            page: 1
-        });
+        setSelectedCategory('all');
+        setSortBy('newest');
+        setSearchTerm('');
     };
 
-    const priceRanges = [
-        { value: 'all', label: 'All Prices' },
-        { value: '0-50', label: 'Under $50' },
-        { value: '50-100', label: '$50 - $100' },
-        { value: '100-200', label: '$100 - $200' },
-        { value: '200-500', label: '$200 - $500' },
-        { value: '500-1000', label: '$500 - $1000' },
-        { value: '1000', label: 'Above $1000' }
-    ];
-
-    const categories = [
-        { value: '', label: 'All Categories', icon: '📦' },
-        { value: 'electronics', label: 'Electronics', icon: '📱' },
-        { value: 'clothing', label: 'Clothing', icon: '👕' }
-    ];
-
-    const sortOptions = [
-        { value: 'newest', label: 'Newest First' },
-        { value: 'price-low', label: 'Price: Low to High' },
-        { value: 'price-high', label: 'Price: High to Low' },
-        { value: 'name', label: 'Name: A to Z' }
-    ];
-
-    const activeFiltersCount = Object.values(filters).filter(
-        value => value && value !== 'all' && value !== 'newest'
-    ).length;
-
-    if (loading) {
-        return (
-            <div className="products-page">
-                <div className="container">
-                    <div className="loading-container">
-                        <div className="spinner"></div>
-                        <p>Loading products...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    // Add to cart function
+    const handleAddToCart = (product) => {
+        // Implement your add to cart logic here
+        console.log('Add to cart:', product);
+        alert(`${product.name} added to cart!`);
+    };
 
     return (
         <div className="products-page">
             <div className="container">
-                {/* Page Header */}
-                <div className="page-header">
-                    <div className="breadcrumb">
-                        <Link to="/">Home</Link>
-                        <span className="breadcrumb-separator">/</span>
-                        <span className="breadcrumb-current">Products</span>
-                    </div>
-                    <h1 className="page-title">Our Products</h1>
-                    <p className="page-subtitle">
-                        Discover amazing deals on electronics and fashion
-                    </p>
-                </div>
-
-                {/* Filters Bar */}
-                <div className="filters-bar">
-                    <div className="filters-left">
-                        <button
-                            className={`filter-toggle ${showFilters ? 'active' : ''}`}
-                            onClick={() => setShowFilters(!showFilters)}
-                        >
-
-                            Filters
-                            {activeFiltersCount > 0 && (
-                                <span className="filter-badge">{activeFiltersCount}</span>
-                            )}
-                        </button>
-
-                        <div className="search-box">
-
-                            <input
-                                type="text"
-                                name="search"
-                                placeholder="Search products..."
-                                value={filters.search}
-                                onChange={handleFilterChange}
-                                className="search-input"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="filters-right">
-                        <div className="sort-filter">
-                            <span className="sort-label">Sort by:</span>
-                            <select
-                                name="sort"
-                                value={filters.sort}
-                                onChange={handleFilterChange}
-                                className="sort-select"
-                            >
-                                {sortOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="results-count">
-              <span className="results-text">
-                {products?.length || 0} products found
-              </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Filters Panel */}
-                {showFilters && (
-                    <div className="filters-panel">
-                        <div className="filters-header">
-                            <h3>Filter Products</h3>
-                            <button className="clear-filters" onClick={clearFilters}>
-                                Clear All
-                            </button>
-                        </div>
-
-                        <div className="filters-grid">
-                            {/* Category Filter */}
-                            <div className="filter-group">
-                                <label className="filter-label">Category</label>
-                                <div className="category-filters">
-                                    {categories.map(category => (
-                                        <button
-                                            key={category.value}
-                                            className={`category-filter ${filters.category === category.value ? 'active' : ''}`}
-                                            onClick={() => setFilters(prev => ({ ...prev, category: category.value }))}
-                                        >
-                                            <span className="category-icon">{category.icon}</span>
-                                            {category.label}
-                                        </button>
-                                    ))}
-                                </div>
+                {/* Admin Banner - শুধু admin দেখতে পাবে */}
+                {isAuthenticated && user?.role === 'admin' && (
+                    <div className="admin-banner">
+                        <div className="admin-banner-content">
+                            <div className="banner-text">
+                                <h3>Product Management</h3>
+                                <p>Add, edit, or manage products in your store</p>
                             </div>
-
-                            {/* Price Range Filter */}
-                            <div className="filter-group">
-                                <label className="filter-label">Price Range</label>
-                                <div className="price-filters">
-                                    {priceRanges.map(range => (
-                                        <button
-                                            key={range.value}
-                                            className={`price-filter ${filters.priceRange === range.value ? 'active' : ''}`}
-                                            onClick={() => setFilters(prev => ({ ...prev, priceRange: range.value }))}
-                                        >
-                                            {range.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Stock Status Filter */}
-                            <div className="filter-group">
-                                <label className="filter-label">Availability</label>
-                                <div className="stock-filters">
-                                    <button
-                                        className={`stock-filter ${filters.inStock === 'true' ? 'active' : ''}`}
-                                        onClick={() => setFilters(prev => ({
-                                            ...prev,
-                                            inStock: prev.inStock === 'true' ? '' : 'true'
-                                        }))}
-                                    >
-                                        In Stock
-                                    </button>
-                                    <button
-                                        className={`stock-filter ${filters.inStock === 'false' ? 'active' : ''}`}
-                                        onClick={() => setFilters(prev => ({
-                                            ...prev,
-                                            inStock: prev.inStock === 'false' ? '' : 'false'
-                                        }))}
-                                    >
-                                        Out of Stock
-                                    </button>
-                                </div>
-                            </div>
+                            <Link to="/admin/products" className="btn btn-primary">
+                                Manage Products
+                            </Link>
                         </div>
                     </div>
                 )}
 
-                {/* Products Grid */}
-                <div className="products-section">
-                    {products && products.length > 0 ? (
-                        <>
-                            <div className="products-grid">
-                                {products.map(product => (
-                                    <ProductItem key={product._id} product={product} />
-                                ))}
-                            </div>
-
-                            {/* Load More Button */}
-                            <div className="load-more-section">
-                                <button className="btn btn-outline btn-load-more">
-                                    Load More Products
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="no-products">
-                            <h3>No products found</h3>
-                            <p>Try adjusting your filters or search terms</p>
-                            <button className="btn btn-primary" onClick={clearFilters}>
-                                Clear Filters
-                            </button>
+                {/* Page Header */}
+                <div className="products-header">
+                    <div className="header-content">
+                        <div className="header-text">
+                            <h1>Our Products</h1>
+                            <p>Discover amazing deals on quality products</p>
                         </div>
-                    )}
+                        {isAuthenticated && user?.role === 'admin' && (
+                            <Link to="/admin/products" className="btn btn-primary desktop-only">
+                                ➕ Add New Product
+                            </Link>
+                        )}
+                    </div>
                 </div>
+
+                {/* Search and Filters */}
+                <div className="products-filters">
+                    <div className="search-box">
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            className="search-input"
+                        />
+                    </div>
+
+                    <div className="filter-controls">
+                        <div className="category-filters">
+                            <button
+                                className={`category-btn ${selectedCategory === 'all' ? 'active' : ''}`}
+                                onClick={() => handleCategoryChange('all')}
+                            >
+                                All Products
+                            </button>
+                            {categories.filter(cat => cat !== 'all').map(category => (
+                                <button
+                                    key={category}
+                                    className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+                                    onClick={() => handleCategoryChange(category)}
+                                >
+                                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="sort-controls">
+                            <select value={sortBy} onChange={handleSortChange} className="sort-select">
+                                <option value="newest">Newest First</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name: A to Z</option>
+                            </select>
+
+                            {(selectedCategory !== 'all' || searchTerm || sortBy !== 'newest') && (
+                                <button className="btn-clear" onClick={clearFilters}>
+                                    Clear Filters
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Products Grid */}
+                {loading ? (
+                    <div className="loading-state">
+                        <div className="spinner"></div>
+                        <p>Loading products...</p>
+                    </div>
+                ) : filteredProducts.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-icon">🔍</div>
+                        <h3>No Products Found</h3>
+                        <p>
+                            {searchTerm || selectedCategory !== 'all'
+                                ? 'Try adjusting your search or filters'
+                                : 'No products available at the moment'
+                            }
+                        </p>
+                        {(searchTerm || selectedCategory !== 'all') && (
+                            <button className="btn btn-primary" onClick={clearFilters}>
+                                Show All Products
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <div className="products-info">
+                            <p>Showing {filteredProducts.length} of {products.length} products</p>
+                        </div>
+
+                        <div className="products-grid">
+                            {filteredProducts.map(product => (
+                                <div key={product._id} className="product-card">
+                                    <div className="product-image">
+                                        <img
+                                            src={product.images?.[0] || '/images/placeholder.jpg'}
+                                            alt={product.name}
+                                            onError={(e) => {
+                                                e.target.src = '/images/placeholder.jpg';
+                                            }}
+                                        />
+                                        <div className="product-overlay">
+                                            <Link to={`/products/${product._id}`} className="btn btn-primary">
+                                                View Details
+                                            </Link>
+                                        </div>
+                                        {product.stock === 0 && (
+                                            <div className="out-of-stock-badge">Out of Stock</div>
+                                        )}
+                                    </div>
+                                    <div className="product-content">
+                                        <span className="product-category">{product.category}</span>
+                                        <h3 className="product-name">{product.name}</h3>
+                                        <p className="product-description">
+                                            {product.description}
+                                        </p>
+                                        <div className="product-features">
+                                            {product.features?.slice(0, 3).map((feature, index) => (
+                                                <span key={index} className="feature-tag">✓ {feature}</span>
+                                            ))}
+                                        </div>
+                                        <div className="product-footer">
+                                            <div className="price-section">
+                                                <span className="product-price">${product.price}</span>
+                                                {product.originalPrice && product.originalPrice > product.price && (
+                                                    <span className="product-original-price">${product.originalPrice}</span>
+                                                )}
+                                            </div>
+                                            <span className={`product-stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                                            </span>
+                                        </div>
+                                        <div className="product-actions">
+                                            <Link to={`/products/${product._id}`} className="btn btn-outline">
+                                                View Details
+                                            </Link>
+                                            <button
+                                                className="btn btn-primary"
+                                                disabled={product.stock === 0}
+                                                onClick={() => handleAddToCart(product)}
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                {/* Floating Action Button for Mobile */}
+                {isAuthenticated && user?.role === 'admin' && (
+                    <Link to="/admin/products" className="floating-admin-btn">
+                        <span className="btn-text">Add Product</span>
+                    </Link>
+                )}
             </div>
         </div>
     );

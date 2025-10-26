@@ -1,51 +1,60 @@
+// server/models/Product.js
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Product name is required'],
-        trim: true,
-        maxlength: [100, 'Product name cannot exceed 100 characters']
+        required: true,
+        trim: true
     },
     description: {
         type: String,
-        required: [true, 'Product description is required'],
-        maxlength: [1000, 'Description cannot exceed 1000 characters']
+        required: true
     },
     price: {
         type: Number,
-        required: [true, 'Product price is required'],
-        min: [0, 'Price cannot be negative']
+        required: true,
+        min: 0
+    },
+    originalPrice: {
+        type: Number,
+        min: 0
     },
     category: {
         type: String,
-        required: [true, 'Product category is required'],
-        enum: {
-            values: ['electronics', 'clothing', 'mobile-phones', 'accessories'],
-            message: 'Please select a valid category'
-        }
+        required: true,
+        enum: ['electronics', 'clothing', 'books', 'home', 'sports']
+    },
+    brand: {
+        type: String,
+        default: 'Generic'
     },
     stock: {
         type: Number,
-        required: [true, 'Product stock is required'],
-        min: [0, 'Stock cannot be negative'],
-        default: 0
+        required: true,
+        default: 0,
+        min: 0
     },
-    images: {
-        type: [String],
-        default: ['https://via.placeholder.com/300']
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    images: [{
+        type: String
+    }],
+    features: [{
+        type: String
+    }],
+    sku: {
+        type: String,
+        unique: true
     }
 }, {
     timestamps: true
 });
 
-// Index for better performance
-productSchema.index({ category: 1 });
-productSchema.index({ createdAt: -1 });
+// Generate SKU before saving
+productSchema.pre('save', function(next) {
+    if (!this.sku) {
+        this.sku = 'GD' + Date.now().toString().slice(-8);
+    }
+    next();
+});
 
 module.exports = mongoose.model('Product', productSchema);
