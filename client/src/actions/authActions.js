@@ -119,6 +119,7 @@ export const logoutUser = () => (dispatch) => {
 };
 
 // Load User
+// client/src/actions/authActions.js - Add this if not exists
 export const loadUser = () => async (dispatch) => {
     try {
         const token = localStorage.getItem('token');

@@ -40,28 +40,29 @@ const Login = () => {
     };
 
     // Temporary admin login bypass
+// client/src/components/auth/Login.js - handleAdminLogin function update
     const handleAdminLogin = () => {
-        if (email === 'good.deal326@gmail.com' && password === 'admin123') {
-            const mockUser = {
-                user: {
-                    id: '1',
-                    name: 'GoodDeal Admin',
-                    email: 'good.deal326@gmail.com',
-                    role: 'admin'
-                },
-                token: 'mock-admin-token-12345'
-            };
+        // Create mock admin user data
+        const mockAdminUser = {
+            user: {
+                id: '1',
+                name: 'GoodDeal Admin',
+                email: 'good.deal326@gmail.com',
+                role: 'admin' // This is important
+            },
+            token: 'mock-admin-token-12345'
+        };
 
-            dispatch({
-                type: 'LOGIN_SUCCESS',
-                payload: mockUser
-            });
+        // Dispatch login success
+        dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: mockAdminUser
+        });
 
-            dispatch(setAlert('Admin login successful!', 'success'));
-            navigate('/');
-        } else {
-            dispatch(setAlert('Invalid admin credentials', 'error'));
-        }
+        dispatch(setAlert('Admin login successful!', 'success'));
+
+        // Redirect to admin dashboard
+        navigate('/admin');
     };
 
     return (

@@ -2,7 +2,7 @@
 const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: false,
-    loading: false,
+    loading: true, // Start with loading true
     user: null,
     error: null
 };
@@ -22,7 +22,8 @@ const authReducer = (state = initialState, action) => {
                 ...action.payload,
                 isAuthenticated: true,
                 loading: false,
-                error: null
+                error: null,
+                user: action.payload.user // Make sure user data is stored
             };
         case 'USER_LOADED':
             return {

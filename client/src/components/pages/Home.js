@@ -221,8 +221,8 @@ const Home = () => {
                             ))}
                         </div>
                     )}
-                    <div className="section-footer">
-                        <Link to="/products" className="btn btn-outline">
+                    <div className="section-footer dark">
+                        <Link to="/products" className="btn-outline">
                             View All Products
                         </Link>
                     </div>

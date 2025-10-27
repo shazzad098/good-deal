@@ -1,9 +1,9 @@
-// client/src/components/routing/PrivateRoute.js
+// client/src/components/routing/AdminRoute.js
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
-const PrivateRoute = ({ children, admin = false }) => {
+const AdminRoute = ({ children }) => {
     const { isAuthenticated, user, loading } = useSelector(state => state.auth);
 
     // Show loading while checking authentication
@@ -21,8 +21,8 @@ const PrivateRoute = ({ children, admin = false }) => {
         return <Navigate to="/login" />;
     }
 
-    // If admin route but user is not admin
-    if (admin && user && user.role !== 'admin') {
+    // If user is not admin
+    if (user && user.role !== 'admin') {
         return (
             <div className="container">
                 <div className="access-denied">
@@ -40,4 +40,4 @@ const PrivateRoute = ({ children, admin = false }) => {
     return children;
 };
 
-export default PrivateRoute;
+export default AdminRoute;
