@@ -1,3 +1,4 @@
+// Updated ProductItem.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -73,8 +74,8 @@ const ProductItem = ({ product }) => {
                 <div className="product-features">
                     {product.features?.slice(0, 2).map((feature, index) => (
                         <span key={index} className="feature-tag">
-              {feature}
-            </span>
+                            {feature}
+                        </span>
                     ))}
                 </div>
 
@@ -117,9 +118,9 @@ const ProductItem = ({ product }) => {
                 </div>
 
                 <div className="product-meta">
-          <span className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-            {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-          </span>
+                    <span className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                        {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                    </span>
                     <span className="product-sku">SKU: {product._id.slice(-8)}</span>
                 </div>
             </div>

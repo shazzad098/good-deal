@@ -82,7 +82,6 @@ const Home = () => {
 
     return (
         <div className="homepage">
-            {/* Hero Section */}
             <section className="hero-section">
                 <div className="hero-background">
                     <div className="hero-overlay"></div>
@@ -90,60 +89,42 @@ const Home = () => {
                 <div className="hero-content">
                     <div className="container">
                         <div className="hero-text">
+                            <div className="hero-badge">
+                                <span className="badge-text">Premium Quality</span>
+                            </div>
                             <h1 className="hero-title">
-                                Welcome to <span className="brand">GoodDeal</span>
+                                Premium Deals on
+                                <span className="brand">Good Deal</span>
                             </h1>
                             <p className="hero-subtitle">
-                                Discover amazing deals on electronics and fashion.
-                                Quality products at unbeatable prices.
+                                Discover exceptional products with unbeatable prices.
+                                Quality guaranteed, satisfaction assured.
                             </p>
                             <div className="hero-actions">
                                 <Link to="/products" className="btn btn-primary btn-large">
-                                    Shop Now
+                                    Shop Collection
                                     <span className="btn-icon">→</span>
                                 </Link>
-                                <Link to="/about" className="btn btn-secondary btn-large">
-                                    Learn More
+                                <Link to="/deals" className="btn btn-secondary btn-large">
+                                    View Special Offers
                                 </Link>
                             </div>
-                            <div className="hero-stats">
-                                <div className="stat-item">
-                                    <div className="stat-number">{stats.products}+</div>
-                                    <div className="stat-label">Products</div>
-                                </div>
-                                <div className="stat-item">
-                                    <div className="stat-number">{stats.customers}+</div>
-                                    <div className="stat-label">Happy Customers</div>
-                                </div>
-                                <div className="stat-item">
-                                    <div className="stat-number">{stats.orders}+</div>
-                                    <div className="stat-label">Orders Delivered</div>
-                                </div>
-                            </div>
                         </div>
-                        <div className="hero-image">
-                            <div className="floating-card card-1">
-                                <div className="card-content">
-                                    <span className="card-icon">📱</span>
-                                    <h4>Smartphones</h4>
-                                    <p>Latest models</p>
-                                </div>
-                            </div>
-                            <div className="floating-card card-2">
-                                <div className="card-content">
-                                    <span className="card-icon">👕</span>
-                                    <h4>Fashion</h4>
-                                    <p>Trending styles</p>
-                                </div>
-                            </div>
-                            <div className="floating-card card-3">
-                                <div className="card-content">
-                                    <span className="card-icon">🎧</span>
-                                    <h4>Accessories</h4>
-                                    <p>Must-have items</p>
-                                </div>
-                            </div>
-                        </div>
+
+                    </div>
+                </div>
+                <div className="hero-stats">
+                    <div className="stat-item">
+                        <div className="stat-number">{stats.products}+</div>
+                        <div className="stat-label">Products</div>
+                    </div>
+                    <div className="stat-item">
+                        <div className="stat-number">{stats.customers}+</div>
+                        <div className="stat-label">Happy Customers</div>
+                    </div>
+                    <div className="stat-item">
+                        <div className="stat-number">{stats.orders}+</div>
+                        <div className="stat-label">Orders Delivered</div>
                     </div>
                 </div>
             </section>
@@ -232,8 +213,8 @@ const Home = () => {
                                         <div className="product-footer">
                                             <span className="product-price">${product.price}</span>
                                             <span className={`product-stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                        {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                      </span>
+                                                {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

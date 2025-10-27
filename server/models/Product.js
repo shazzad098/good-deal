@@ -1,11 +1,10 @@
 // server/models/Product.js
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        trim: true
+        required: true
     },
     description: {
         type: String,
@@ -13,48 +12,22 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true,
-        min: 0
-    },
-    originalPrice: {
-        type: Number,
-        min: 0
+        required: true
     },
     category: {
         type: String,
-        required: true,
-        enum: ['electronics', 'clothing', 'books', 'home', 'sports']
+        required: true
     },
-    brand: {
-        type: String,
-        default: 'Generic'
-    },
+    images: [String],
     stock: {
         type: Number,
-        required: true,
-        default: 0,
-        min: 0
+        default: 0
     },
-    images: [{
-        type: String
-    }],
-    features: [{
-        type: String
-    }],
-    sku: {
-        type: String,
-        unique: true
+    features: [String],
+    specifications: {
+        type: Map,
+        of: String
     }
-}, {
-    timestamps: true
-});
+}, { timestamps: true });
 
-// Generate SKU before saving
-productSchema.pre('save', function(next) {
-    if (!this.sku) {
-        this.sku = 'GD' + Date.now().toString().slice(-8);
-    }
-    next();
-});
-
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('Product', ProductSchema);

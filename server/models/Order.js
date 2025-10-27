@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const orderItemSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'Products',
         required: true
     },
     quantity: {

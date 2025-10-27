@@ -47,7 +47,7 @@ router.post('/products', async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Product created successfully',
+            message: 'Products created successfully',
             product
         });
     } catch (error) {
@@ -69,7 +69,7 @@ router.put('/products/:id', async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Product not found'
+                message: 'Products not found'
             });
         }
 
@@ -88,7 +88,7 @@ router.put('/products/:id', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Product updated successfully',
+            message: 'Products updated successfully',
             product
         });
     } catch (error) {
@@ -108,7 +108,7 @@ router.delete('/products/:id', async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Product not found'
+                message: 'Products not found'
             });
         }
 
@@ -116,7 +116,7 @@ router.delete('/products/:id', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Product deleted successfully'
+            message: 'Products deleted successfully'
         });
     } catch (error) {
         console.error(error);

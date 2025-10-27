@@ -1,45 +1,121 @@
+// client/src/actions/authActions.js
 import axios from 'axios';
-import { loginSuccess, loginFail, logout, userLoaded } from '../reducers/authReducer';
+
+// Set API base URL
+axios.defaults.baseURL = 'http://localhost:5000';
+
+// Set Alert
+export const setAlert = (msg, type) => ({
+    type: 'SET_ALERT',
+    payload: { msg, type, id: Date.now() }
+});
+
+// Remove Alert
+export const removeAlert = (id) => ({
+    type: 'REMOVE_ALERT',
+    payload: id
+});
 
 // Register User
-export const register = (formData) => async (dispatch) => {
+export const registerUser = (userData) => async (dispatch) => {
     try {
-        const res = await axios.post('/api/auth/register', formData);
+        dispatch({ type: 'AUTH_LOADING' });
 
-        if (res.data.token) {
-            localStorage.setItem('token', res.data.token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-        }
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
 
-        dispatch(loginSuccess(res.data));
-        return res.data;
+        const res = await axios.post('/api/auth/register', userData, config);
+
+        dispatch({
+            type: 'REGISTER_SUCCESS',
+            payload: res.data
+        });
+
+        dispatch(setAlert('Registration successful!', 'success'));
+
+        // Auto remove alert after 3 seconds
+        setTimeout(() => {
+            dispatch(removeAlert(Date.now()));
+        }, 3000);
+
     } catch (error) {
-        dispatch(loginFail());
+        const message = error.response?.data?.message || 'Registration failed';
 
-        // Throw the error message for the component to handle
-        const errorMessage = error.response?.data?.message || 'Registration failed';
-        throw new Error(errorMessage);
+        dispatch({
+            type: 'AUTH_ERROR',
+            payload: message
+        });
+
+        dispatch(setAlert(message, 'error'));
+
+        setTimeout(() => {
+            dispatch(removeAlert(Date.now()));
+        }, 3000);
     }
 };
 
 // Login User
-export const login = (email, password) => async (dispatch) => {
+// Login User
+export const loginUser = (email, password) => async (dispatch) => {
     try {
-        const res = await axios.post('/api/auth/login', { email, password });
+        dispatch({ type: 'AUTH_LOADING' });
 
-        if (res.data.token) {
-            localStorage.setItem('token', res.data.token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        const res = await axios.post('/api/auth/login', { email, password }, config);
+
+        dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: res.data
+        });
+
+        dispatch(setAlert('Login successful!', 'success'));
+
+        setTimeout(() => {
+            dispatch(removeAlert(Date.now()));
+        }, 3000);
+
+    } catch (error) {
+        console.error('Login error:', error);
+
+        // Better error handling
+        let message = 'Login failed';
+
+        if (error.response) {
+            // Server responded with error status
+            message = error.response.data?.message || `Server error: ${error.response.status}`;
+        } else if (error.request) {
+            // Request made but no response received
+            message = 'No response from server. Please check if backend is running.';
+        } else {
+            // Something else happened
+            message = error.message;
         }
 
-        dispatch(loginSuccess(res.data));
-        return res.data;
-    } catch (error) {
-        dispatch(loginFail());
+        dispatch({
+            type: 'AUTH_ERROR',
+            payload: message
+        });
 
-        const errorMessage = error.response?.data?.message || 'Login failed';
-        throw new Error(errorMessage);
+        dispatch(setAlert(message, 'error'));
+
+        setTimeout(() => {
+            dispatch(removeAlert(Date.now()));
+        }, 3000);
     }
+};
+
+// Logout User
+export const logoutUser = () => (dispatch) => {
+    dispatch({ type: 'LOGOUT' });
+    dispatch(setAlert('Logged out successfully', 'success'));
 };
 
 // Load User
@@ -47,20 +123,24 @@ export const loadUser = () => async (dispatch) => {
     try {
         const token = localStorage.getItem('token');
 
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-            const res = await axios.get('/api/auth/me');
-            dispatch(userLoaded(res.data));
+        if (!token) {
+            dispatch({ type: 'AUTH_ERROR' });
+            return;
         }
-    } catch (error) {
-        dispatch(loginFail());
-    }
-};
 
-// Logout
-export const logoutUser = () => (dispatch) => {
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
-    dispatch(logout());
+        const config = {
+            headers: {
+                'x-auth-token': token
+            }
+        };
+
+        const res = await axios.get('/api/auth/user', config);
+
+        dispatch({
+            type: 'USER_LOADED',
+            payload: res.data
+        });
+    } catch (error) {
+        dispatch({ type: 'AUTH_ERROR' });
+    }
 };

@@ -1,78 +1,84 @@
+/* client/src/components/admin/ProductManagement.css */
 .product-management {
-    padding: 20px;
-}
-
-.management-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
-}
-
-.management-header h2 {
-    color: #333;
-    margin: 0;
-}
-
-.product-form-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 20px;
-}
-
-.product-form-container {
-    background: white;
-    border-radius: 8px;
-    padding: 0;
-    max-width: 800px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.form-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
+    min-height: 100vh;
     background: #f8f9fa;
+    padding: 20px 0;
 }
 
-.form-header h3 {
+.admin-header {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.header-text h1 {
     margin: 0;
     color: #333;
+    font-size: 2rem;
 }
 
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
+.header-text p {
+    margin: 5px 0 0 0;
     color: #666;
 }
 
-.close-btn:hover {
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* Access Denied */
+.admin-access-denied {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.access-denied-content h1 {
+    color: #dc3545;
+    margin-bottom: 20px;
+}
+
+.access-denied-content p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Form Styles */
+.product-form-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.form-container h2 {
+    margin-bottom: 25px;
     color: #333;
 }
 
 .product-form {
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
 }
 
@@ -86,18 +92,19 @@
 }
 
 .form-group label {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: 600;
-    color: #555;
+    color: #333;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    padding: 10px;
+    padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 14px;
+    transition: border-color 0.3s;
 }
 
 .form-group input:focus,
@@ -107,48 +114,56 @@
     border-color: #007bff;
 }
 
-.specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.spec-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.spec-item label {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 2px;
-}
-
-.feature-item {
+.array-input-group {
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
-    align-items: center;
 }
 
-.feature-item input {
+.array-input-group input {
     flex: 1;
+}
+
+.btn-remove {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 40px;
+    cursor: pointer;
+}
+
+.btn-add {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .form-actions {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
+    gap: 15px;
     margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+}
+
+/* Table Styles */
+.products-list-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.products-list-section h2 {
+    margin-bottom: 20px;
+    color: #333;
 }
 
 .products-table {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow-x: auto;
 }
 
 .products-table table {
@@ -158,7 +173,7 @@
 
 .products-table th,
 .products-table td {
-    padding: 12px 15px;
+    padding: 15px;
     text-align: left;
     border-bottom: 1px solid #eee;
 }
@@ -166,54 +181,86 @@
 .products-table th {
     background: #f8f9fa;
     font-weight: 600;
-    color: #555;
+    color: #333;
 }
 
 .product-thumb {
     width: 50px;
     height: 50px;
     object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.product-info strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.product-info small {
+    color: #666;
 }
 
 .category-badge {
+    background: #e9ecef;
     padding: 4px 8px;
-    border-radius: 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    color: #495057;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 15px;
     font-size: 12px;
     font-weight: 600;
-    text-transform: capitalize;
 }
 
-.category-badge.electronics {
-    background: #e3f2fd;
-    color: #1976d2;
+.status-badge.in-stock {
+    background: #d4edda;
+    color: #155724;
 }
 
-.category-badge.clothing {
-    background: #f3e5f5;
-    color: #7b1fa2;
+.status-badge.out-of-stock {
+    background: #f8d7da;
+    color: #721c24;
 }
 
-.stock.in-stock {
-    color: #27ae60;
-    font-weight: 600;
+.action-buttons {
+    display: flex;
+    gap: 10px;
 }
 
-.stock.out-of-stock {
-    color: #e74c3c;
-    font-weight: 600;
-}
-
-.btn {
-    padding: 8px 16px;
+.btn-edit {
+    background: #ffc107;
+    color: #212529;
     border: none;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     text-decoration: none;
     display: inline-block;
-    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 14px;
+    transition: all 0.3s;
 }
 
 .btn-primary {
@@ -225,6 +272,17 @@
     background: #0056b3;
 }
 
+.btn-outline {
+    background: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.btn-outline:hover {
+    background: #007bff;
+    color: white;
+}
+
 .btn-secondary {
     background: #6c757d;
     color: white;
@@ -234,62 +292,45 @@
     background: #545b62;
 }
 
-.btn-sm {
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
-.btn-edit {
-    background: #28a745;
-    color: white;
-    margin-right: 5px;
-}
-
-.btn-edit:hover {
-    background: #218838;
-}
-
-.btn-delete {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #c82333;
-}
-
-.btn-danger {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-danger:hover {
-    background: #c82333;
-}
-
-.no-products {
+/* Loading and Empty States */
+.loading-state,
+.empty-state {
     text-align: center;
     padding: 40px;
     color: #666;
 }
 
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
 
-    .specs-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .management-header {
+    .action-buttons {
         flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
     }
 
     .products-table {
-        overflow-x: auto;
+        font-size: 14px;
     }
 }

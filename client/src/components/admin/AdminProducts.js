@@ -78,13 +78,13 @@ const AdminProducts = () => {
                 await axios.put(`/api/admin/products/${editingProduct._id}`, productData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                showMessage('success', 'Product updated successfully!');
+                showMessage('success', 'Products updated successfully!');
             } else {
                 // Create new product
                 await axios.post('/api/admin/products', productData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                showMessage('success', 'Product created successfully!');
+                showMessage('success', 'Products created successfully!');
             }
 
             setShowForm(false);
@@ -125,7 +125,7 @@ const AdminProducts = () => {
                 await axios.delete(`/api/admin/products/${productId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                showMessage('success', 'Product deleted successfully!');
+                showMessage('success', 'Products deleted successfully!');
                 fetchProducts();
             } catch (error) {
                 console.error('Error deleting product:', error);
@@ -187,14 +187,14 @@ const AdminProducts = () => {
             <div className="container">
                 <div className="admin-header">
                     <div className="header-content">
-                        <h1>Product Management</h1>
+                        <h1>Products Management</h1>
                         <p>Manage your products inventory</p>
                     </div>
                     <button
                         className="btn btn-primary"
                         onClick={() => setShowForm(true)}
                     >
-                        + Add New Product
+                        + Add New Products
                     </button>
                 </div>
 
@@ -205,17 +205,17 @@ const AdminProducts = () => {
                     </div>
                 )}
 
-                {/* Product Form */}
+                {/* Products Form */}
                 {showForm && (
                     <div className="product-form-overlay">
                         <div className="product-form">
                             <div className="form-header">
-                                <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+                                <h2>{editingProduct ? 'Edit Products' : 'Add New Products'}</h2>
                                 <button className="close-btn" onClick={cancelEdit}>×</button>
                             </div>
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group">
-                                    <label>Product Name *</label>
+                                    <label>Products Name *</label>
                                     <input
                                         type="text"
                                         name="name"
@@ -284,7 +284,7 @@ const AdminProducts = () => {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Product Images</label>
+                                    <label>Products Images</label>
                                     {formData.images.map((image, index) => (
                                         <div key={index} className="image-input-group">
                                             <input
@@ -315,7 +315,7 @@ const AdminProducts = () => {
 
                                 <div className="form-actions">
                                     <button type="submit" className="btn btn-primary">
-                                        {editingProduct ? 'Update Product' : 'Create Product'}
+                                        {editingProduct ? 'Update Products' : 'Create Products'}
                                     </button>
                                     <button type="button" className="btn btn-outline" onClick={cancelEdit}>
                                         Cancel
@@ -341,7 +341,7 @@ const AdminProducts = () => {
                             className="btn btn-primary"
                             onClick={() => setShowForm(true)}
                         >
-                            Add Your First Product
+                            Add Your First Products
                         </button>
                     </div>
                 ) : (
@@ -399,14 +399,14 @@ const AdminProducts = () => {
                                             <button
                                                 className="btn-action btn-edit"
                                                 onClick={() => handleEdit(product)}
-                                                title="Edit Product"
+                                                title="Edit Products"
                                             >
                                                 ✏️ Edit
                                             </button>
                                             <button
                                                 className="btn-action btn-delete"
                                                 onClick={() => handleDelete(product._id)}
-                                                title="Delete Product"
+                                                title="Delete Products"
                                             >
                                                 🗑️ Delete
                                             </button>

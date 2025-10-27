@@ -70,23 +70,6 @@ const Footer = () => {
                             <li><Link to="/support">Support</Link></li>
                         </ul>
                     </div>
-
-                    {/* Newsletter */}
-                    <div className="footer-section">
-                        <h4 className="footer-title">Stay Connected</h4>
-                        <p className="newsletter-text">
-                            Subscribe to get special offers, free giveaways, and exclusive deals.
-                        </p>
-                        <div className="newsletter-form">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="newsletter-input"
-                            />
-                            <button className="newsletter-btn">Subscribe</button>
-                        </div>
-
-                    </div>
                 </div>
 
                 {/* Footer Bottom */}

@@ -1,111 +1,115 @@
-// routes/auth.js
+// server/routes/auth.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
+// server/routes/auth.js
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
+
+        // Validation
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: 'Please enter all fields'
+            });
+        }
 
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({
-                success: false,
                 message: 'User already exists'
             });
         }
 
-        // Create user
+        // Create new user
         user = new User({
             name,
             email,
             password
         });
 
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
         await user.save();
 
-        // Create token
-        const token = jwt.sign(
-            { userId: user.id },
-            process.env.JWT_SECRET || 'fallback_secret',
-            { expiresIn: '7d' }
+        // Create JWT token
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({
+                    token,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email
+                    }
+                });
+            }
         );
 
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully',
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        });
     } catch (error) {
-        console.error(error);
+        console.error('Server registration error:', error);
         res.status(500).json({
-            success: false,
-            message: 'Server error'
+            message: 'Server error in registration',
+            error: error.message
         });
     }
 });
-
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
         // Check if user exists
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // Create token
-        const token = jwt.sign(
-            { userId: user.id },
-            process.env.JWT_SECRET || 'fallback_secret',
-            { expiresIn: '7d' }
+        // Create JWT token
+        const payload = { user: { id: user.id } };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({
+                    token,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        role: user.role
+                    }
+                });
+            }
         );
 
-        res.json({
-            success: true,
-            message: 'Login successful',
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error'
-        });
+        console.error('Server error:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 

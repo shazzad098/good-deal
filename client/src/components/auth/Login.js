@@ -1,207 +1,134 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../../actions/authActions';
-import './Auth.css';
+// client/src/components/auth/Login.js
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser, setAlert } from '../../actions/authActions';
+import './Login.css';
 
 const Login = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
 
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { isAuthenticated, loading } = useSelector(state => state.auth);
+    const alert = useSelector(state => state.alert);
 
     const { email, password } = formData;
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
+
     const onChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        if (errors[e.target.name]) {
-            setErrors({ ...errors, [e.target.name]: '' });
-        }
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!email) {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Email is invalid';
-        }
-
-        if (!password) {
-            newErrors.password = 'Password is required';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) {
+        if (!email || !password) {
+            dispatch(setAlert('Please fill in all fields', 'error'));
             return;
         }
 
-        setLoading(true);
+        dispatch(loginUser(email, password));
+    };
 
-        try {
-            await dispatch(login(email, password));
-            navigate('/');
-        } catch (error) {
-            setErrors({
-                general: error.message || 'Invalid email or password. Please try again.'
+    // Temporary admin login bypass
+    const handleAdminLogin = () => {
+        if (email === 'good.deal326@gmail.com' && password === 'admin123') {
+            const mockUser = {
+                user: {
+                    id: '1',
+                    name: 'GoodDeal Admin',
+                    email: 'good.deal326@gmail.com',
+                    role: 'admin'
+                },
+                token: 'mock-admin-token-12345'
+            };
+
+            dispatch({
+                type: 'LOGIN_SUCCESS',
+                payload: mockUser
             });
-        } finally {
-            setLoading(false);
+
+            dispatch(setAlert('Admin login successful!', 'success'));
+            navigate('/');
+        } else {
+            dispatch(setAlert('Invalid admin credentials', 'error'));
         }
     };
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
-    const handleDemoLogin = (role) => {
-        const demoCredentials = {
-            admin: { email: 'admin@gooddeal.com', password: 'admin123' },
-            user: { email: 'user@gooddeal.com', password: 'user123' }
-        };
-
-        setFormData(demoCredentials[role]);
-    };
-
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    {/* Left Side - Branding */}
-                    <div className="auth-branding">
-                        <div className="brand-logo">
-                            <div className="logo-icon">🛒</div>
-                            <h1>GoodDeal</h1>
-                        </div>
-                        <div className="brand-content">
-                            <h2>Welcome Back!</h2>
-                            <p>Sign in to access your account and continue shopping with the best deals.</p>
-                            <div className="features-list">
-                                <div className="feature-item">
-                                    <span className="feature-icon">🚚</span>
-                                    <span>Free Shipping Over $50</span>
-                                </div>
-                                <div className="feature-item">
-                                    <span className="feature-icon">🔒</span>
-                                    <span>Secure Payment</span>
-                                </div>
-                                <div className="feature-item">
-                                    <span className="feature-icon">⭐</span>
-                                    <span>Best Prices Guaranteed</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div className="login-page">
+            <div className="container">
+                <div className="login-form-container">
+                    <h2>Sign In to GoodDeal</h2>
 
-                    {/* Right Side - Form */}
-                    <div className="auth-form-section">
-                        <div className="form-header">
-                            <h2>Sign In</h2>
-                            <p>Enter your credentials to access your account</p>
+                    {alert && alert.map(alert => (
+                        <div key={alert.id} className={`alert alert-${alert.type}`}>
+                            {alert.msg}
+                        </div>
+                    ))}
+
+                    <form onSubmit={onSubmit}>
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                placeholder="Email Address"
+                                name="email"
+                                value={email}
+                                onChange={onChange}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                name="password"
+                                value={password}
+                                onChange={onChange}
+                                minLength="6"
+                                required
+                            />
                         </div>
 
+                        <div className="remember-forgot">
+                            <label className="remember-me">
+                                <input type="checkbox" />
+                                Remember me
+                            </label>
+                            <Link to="/forgot-password" className="forgot-password">
+                                Forgot Password?
+                            </Link>
+                        </div>
 
-                        {errors.general && (
-                            <div className="alert alert-error">
-                                <span className="alert-icon">⚠️</span>
-                                {errors.general}
-                            </div>
-                        )}
+                        <button
+                            type="submit"
+                            className="login-btn"
+                            disabled={loading}
+                        >
+                            {loading ? 'Signing In...' : 'SIGN IN'}
+                        </button>
 
-                        <form onSubmit={onSubmit} className="auth-form">
-                            <div className="form-group">
-                                <label htmlFor="email">Email Address</label>
-                                <div className="input-container">
+                        {/* Admin Quick Login Button */}
+                        <button
+                            type="button"
+                            onClick={handleAdminLogin}
+                            className="admin-login-btn"
+                        >
+                            Quick Admin Login
+                        </button>
+                    </form>
 
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
-                                        value={email}
-                                        onChange={onChange}
-                                        className={errors.email ? 'error' : ''}
-                                        placeholder="Enter your email address"
-                                        disabled={loading}
-                                    />
-                                </div>
-                                {errors.email && <span className="error-text">{errors.email}</span>}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="password">Password</label>
-                                <div className="input-container">
-
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        id="password"
-                                        name="password"
-                                        value={password}
-                                        onChange={onChange}
-                                        className={errors.password ? 'error' : ''}
-                                        placeholder="Enter your password"
-                                        disabled={loading}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="password-toggle"
-                                        onClick={togglePasswordVisibility}
-                                        disabled={loading}
-                                    >
-                                        {showPassword ? '🙈' : '👁️'}
-                                    </button>
-                                </div>
-                                {errors.password && <span className="error-text">{errors.password}</span>}
-                            </div>
-
-                            <div className="form-options">
-                                <label className="checkbox-label">
-                                    <input type="checkbox" />
-                                    <span className="checkmark"></span>
-                                    Remember me
-                                </label>
-                                <Link to="/forgot-password" className="forgot-password">
-                                    Forgot Password?
-                                </Link>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary btn-large btn-full"
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <>
-                                        <span className="spinner"></span>
-                                        Signing In...
-                                    </>
-                                ) : (
-                                    'Sign In'
-                                )}
-                            </button>
-
-                            <div className="auth-footer">
-                                <p>
-                                    Don't have an account?{' '}
-                                    <Link to="/register" className="auth-link">
-                                        Create an account
-                                    </Link>
-                                </p>
-                            </div>
-                        </form>
+                    <div className="register-link">
+                        Don't have an account? <Link to="/register">Create an account</Link>
                     </div>
                 </div>
             </div>

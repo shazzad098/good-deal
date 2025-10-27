@@ -1,13 +1,20 @@
 // client/src/store.js
-import { configureStore } from '@reduxjs/toolkit';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import { composeWithDevTools } from '@redux-devtools/extension';
 import authReducer from './reducers/authReducer';
-import productReducer from './reducers/productReducer';
+import alertReducer from './reducers/alertReducer';
 import cartReducer from './reducers/cartReducer';
 
-export default configureStore({
-    reducer: {
-        auth: authReducer,
-        products: productReducer,
-        cart: cartReducer
-    }
+const rootReducer = combineReducers({
+    auth: authReducer,
+    alert: alertReducer,
+    cart: cartReducer
 });
+
+const store = createStore(
+    rootReducer,
+    composeWithDevTools(applyMiddleware(thunk))
+);
+
+export default store;

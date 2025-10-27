@@ -1,49 +1,42 @@
-// server/server.js - এটা যোগ করুন routes এর আগে
+// server/server.js
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
-
-const connectDB = require('./config/db');
 
 const app = express();
 
-// Connect Database
-connectDB();
+// CORS setup
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
-// Init Middleware
-app.use(express.json({ extended: false }));
+app.use(express.json());
 
-// CORS middleware
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
-
-// Test route
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Server is working!' });
-});
+// Database connection - ETA CHANGE KORUN
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gooddeal', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => {
+        console.log('❌ MongoDB Connection Error:', err);
+        console.log('📌 Connection string:', process.env.MONGODB_URI);
+    });
 
 // Routes
-const authRoutes = require('./routes/auth');
-const productRoutes = require('./routes/products');
-const adminRoutes = require('./routes/admin');
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/products', require('./routes/products'));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/admin', adminRoutes);
-
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client/build')));
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../client', 'build', 'index.html'));
-    });
-}
+// Test route
+app.get('/', (req, res) => {
+    res.json({ message: 'API is running...' });
+});
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`📍 API: http://localhost:${PORT}`);
+    console.log(`🗄️  MongoDB: ${process.env.MONGODB_URI ? 'Using cloud MongoDB' : 'Using local MongoDB'}`);
+});
