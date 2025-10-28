@@ -154,7 +154,7 @@ const Home = () => {
             <section className="categories-section">
                 <div className="container">
                     <div className="section-header">
-                        <h2>Shop by Category</h2>
+                        <h2>Product & Services</h2>
                         <p>Explore our wide range of products</p>
                     </div>
                     <div className="categories-grid">
