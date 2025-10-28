@@ -1,6 +1,6 @@
 // client/src/App.js
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import store from './store';
 import './App.css';
@@ -11,6 +11,7 @@ import Footer from './components/layout/Footer';
 import Alert from './components/layout/Alert';
 import Home from './components/pages/Home';
 import Products from './components/products/Products';
+import ProductList from './components/products/ProductList';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Cart from './components/cart/Cart';
@@ -20,57 +21,68 @@ import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 import { loadUser } from './actions/authActions';
 
+// AppLayout Component
+const AppLayout = () => {
+    const location = useLocation();
+    const isAdminRoute = location.pathname.startsWith('/admin');
+
+    return (
+        <div className="App">
+            {!isAdminRoute && <Navbar />}
+
+            <Alert />
+            <main className="main-content">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+
+                    {/* ✅ 2. /products রুটটি ProductList কে দিন */}
+                    <Route path="/products" element={<ProductList />} />
+
+                    {/* ✅ 3. /products/:id রুটটি Products কে দিন */}
+                    <Route path="/products/:id" element={<Products />} />
+
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/cart" element={<Cart />} />
+
+                    {/* Admin Routes */}
+                    <Route
+                        path="/admin/*"
+                        element={
+                            <AdminRoute>
+                                <AdminDashboard />
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* Regular protected routes */}
+                    <Route
+                        path="/checkout"
+                        element={
+                            <PrivateRoute>
+                                <Checkout />
+                            </PrivateRoute>
+                        }
+                    />
+                </Routes>
+            </main>
+
+            {!isAdminRoute && <Footer />}
+        </div>
+    );
+};
+
 // App Content Component
 const AppContent = () => {
     const dispatch = useDispatch();
-    const { user } = useSelector(state => state.auth);
 
     useEffect(() => {
-        // Load user when app starts
         dispatch(loadUser());
     }, [dispatch]);
 
     return (
         <Router>
-            <div className="App">
-                {/* Show navbar only for non-admin users */}
-                {(!user || user.role !== 'admin') && <Navbar />}
-
-                <Alert />
-                <main className="main-content">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/products" element={<Products />} />
-                        <Route path="/products/:id" element={<Products />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/cart" element={<Cart />} />
-
-                        {/* Admin Routes */}
-                        <Route
-                            path="/admin/*"
-                            element={
-                                <AdminRoute>
-                                    <AdminDashboard />
-                                </AdminRoute>
-                            }
-                        />
-
-                        {/* Regular protected routes */}
-                        <Route
-                            path="/checkout"
-                            element={
-                                <PrivateRoute>
-                                    <Checkout />
-                                </PrivateRoute>
-                            }
-                        />
-                    </Routes>
-                </main>
-
-                {/* Show footer only for non-admin users */}
-                {(!user || user.role !== 'admin') && <Footer />}
-            </div>
+            <AppLayout />
         </Router>
     );
 };

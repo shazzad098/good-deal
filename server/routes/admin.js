@@ -4,6 +4,8 @@ const router = express.Router();
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const User = require('../models/User');
+const Order = require('../models/Order');
 
 // Middleware to check if user is admin
 router.use(auth, admin);
@@ -26,6 +28,7 @@ router.get('/products', async (req, res) => {
 });
 
 // POST - Create new product (Admin only)
+// ✅ FIX: Improved Error Handling
 router.post('/products', async (req, res) => {
     try {
         const { name, description, price, category, stock, images } = req.body;
@@ -37,13 +40,17 @@ router.post('/products', async (req, res) => {
             });
         }
 
+        // Automatically set status based on stock
+        const status = stock > 0 ? 'active' : 'out-of-stock';
+
         const product = new Product({
             name,
             description,
             price,
             category,
             stock,
-            images: images || ['https://via.placeholder.com/300']
+            images: images && images.length > 0 ? images.filter(img => img) : ['https://via.placeholder.com/300'],
+            status
         });
 
         await product.save();
@@ -54,15 +61,17 @@ router.post('/products', async (req, res) => {
             product
         });
     } catch (error) {
+        // ✅ FIX: Send Mongoose validation error instead of generic 500
         console.error('Error creating product:', error);
-        res.status(500).json({
+        res.status(400).json({
             success: false,
-            message: 'Server error'
+            message: error.message // This will show the exact validation error
         });
     }
 });
 
 // PUT - Update product (Admin only)
+// ✅ FIX: Improved Error Handling
 router.put('/products/:id', async (req, res) => {
     try {
         const { name, description, price, category, stock, images } = req.body;
@@ -76,6 +85,9 @@ router.put('/products/:id', async (req, res) => {
             });
         }
 
+        // Automatically update status based on stock
+        const status = stock > 0 ? 'active' : 'out-of-stock';
+
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
             {
@@ -84,9 +96,10 @@ router.put('/products/:id', async (req, res) => {
                 price,
                 category,
                 stock,
-                images: images || product.images
+                images: images && images.length > 0 ? images.filter(img => img) : product.images,
+                status
             },
-            { new: true, runValidators: true }
+            { new: true, runValidators: true } // runValidators ensures enum is checked
         );
 
         res.json({
@@ -95,10 +108,11 @@ router.put('/products/:id', async (req, res) => {
             product: updatedProduct
         });
     } catch (error) {
+        // ✅ FIX: Send Mongoose validation error instead of generic 500
         console.error('Error updating product:', error);
-        res.status(500).json({
+        res.status(400).json({
             success: false,
-            message: 'Server error'
+            message: error.message // This will show the exact validation error
         });
     }
 });
@@ -129,5 +143,57 @@ router.delete('/products/:id', async (req, res) => {
         });
     }
 });
+
+// GET all users (Admin only)
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find().select('-password').sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+});
+
+// GET stats (Admin only)
+router.get('/stats', async (req, res) => {
+    try {
+        const totalProducts = await Product.countDocuments();
+        const totalUsers = await User.countDocuments();
+        const totalOrders = await Order.countDocuments();
+
+        const orderStats = await Order.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$totalAmount" }
+                }
+            }
+        ]);
+
+        const totalRevenue = orderStats.length > 0 ? orderStats[0].totalRevenue : 0;
+
+        res.json({
+            success: true,
+            totalProducts,
+            totalUsers,
+            totalOrders,
+            totalRevenue
+        });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+});
+
 
 module.exports = router;

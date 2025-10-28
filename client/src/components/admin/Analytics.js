@@ -1,63 +1,73 @@
+// client/src/components/admin/Analytics.js
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import axios from 'axios';
+
+// ✅ Axios instance তৈরি করুন
+const api = axios.create({
+    baseURL: 'http://localhost:5000/api',
+    timeout: 10000,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 const Analytics = () => {
-    const [timeRange, setTimeRange] = useState('monthly');
-    const [chartData, setChartData] = useState([]);
+    const [stats, setStats] = useState({
+        totalRevenue: 0,
+        totalProducts: 0,
+        totalUsers: 0,
+        totalOrders: 0
+    });
+    const [loading, setLoading] = useState(true);
 
-    const { user } = useSelector(state => state.auth);
+    // Note: Top products and chart data would require more complex backend endpoints
+    const [topProducts, setTopProducts] = useState([]);
 
     useEffect(() => {
-        // Simulate chart data based on time range
-        const data = {
-            daily: [65, 59, 80, 81, 56, 55, 40],
-            weekly: [28, 48, 40, 19, 86, 27, 90],
-            monthly: [12, 19, 3, 5, 2, 3, 15, 25, 32, 45, 28, 36]
+        const fetchAllStats = async () => {
+            setLoading(true);
+            try {
+                // Fetch main stats
+                const statsRes = await api.get('/admin/stats');
+                setStats(statsRes.data);
+
+                // Fetch top products (using product route for now, ideally needs aggregation)
+                const productsRes = await api.get('/admin/products');
+                // Mocking sales data, as backend doesn't provide it
+                const productsWithSales = productsRes.data.products.slice(0, 4).map((p, i) => ({
+                    ...p,
+                    sales: 100 - i * 15, // Mock sales
+                    revenue: (100 - i * 15) * p.price
+                }));
+                setTopProducts(productsWithSales);
+
+            } catch (error) {
+                console.error("Failed to fetch analytics:", error);
+            } finally {
+                setLoading(false);
+            }
         };
-        setChartData(data[timeRange] || data.monthly);
-    }, [timeRange]);
+        fetchAllStats();
+    }, []);
 
-    const analyticsStats = [
-        {
-            icon: '💰',
-            title: 'Total Revenue',
-            value: '$12,450',
-            change: '+12%',
-            changeType: 'positive',
-            description: 'From last month'
-        },
-        {
-            icon: '📦',
-            title: 'Total Orders',
-            value: '324',
-            change: '+15%',
-            changeType: 'positive',
-            description: 'From last month'
-        },
-        {
-            icon: '👥',
-            title: 'New Customers',
-            value: '89',
-            change: '+8%',
-            changeType: 'positive',
-            description: 'From last month'
-        },
-        {
-            icon: '🛒',
-            title: 'Conversion Rate',
-            value: '3.2%',
-            change: '-0.2%',
-            changeType: 'negative',
-            description: 'From last month'
-        }
-    ];
-
-    const topProducts = [
-        { name: 'iPhone 14 Pro', sales: 124, revenue: '$15,480' },
-        { name: 'MacBook Air', sales: 89, revenue: '$12,450' },
-        { name: 'AirPods Pro', sales: 156, revenue: '$4,680' },
-        { name: 'iPad Air', sales: 67, revenue: '$6,700' }
-    ];
+    if (loading) {
+        return (
+            <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading analytics...</p>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -66,56 +76,38 @@ const Analytics = () => {
                 <p>Track your store performance and key metrics</p>
             </div>
 
-            {/* Time Range Selector */}
             <div className="quick-actions" style={{marginBottom: '30px'}}>
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '25px'
-                }}>
-                    <h3>Performance Overview</h3>
-                    <div className="filter-group">
-                        <select
-                            className="filter-select"
-                            value={timeRange}
-                            onChange={(e) => setTimeRange(e.target.value)}
-                            style={{minWidth: '120px'}}
-                        >
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                        </select>
-                    </div>
-                </div>
-
+                <h3>Performance Overview</h3>
                 {/* Stats Grid */}
                 <div className="stats-grid" style={{marginBottom: '0'}}>
-                    {analyticsStats.map((stat, index) => (
-                        <div key={index} className="stat-card">
-                            <div className="stat-icon">{stat.icon}</div>
-                            <div className="stat-info">
-                                <h3>{stat.title}</h3>
-                                <p className="stat-number">{stat.value}</p>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '5px',
-                                    fontSize: '0.8rem'
-                                }}>
-                                    <span style={{
-                                        color: stat.changeType === 'positive' ? '#28a745' : '#dc3545',
-                                        fontWeight: '600'
-                                    }}>
-                                        {stat.change}
-                                    </span>
-                                    <span style={{color: '#6c757d'}}>
-                                        {stat.description}
-                                    </span>
-                                </div>
-                            </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">💰</div>
+                        <div className="stat-info">
+                            <h3>Total Revenue</h3>
+                            <p className="stat-number">${stats.totalRevenue.toFixed(2)}</p>
                         </div>
-                    ))}
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">📋</div>
+                        <div className="stat-info">
+                            <h3>Total Orders</h3>
+                            <p className="stat-number">{stats.totalOrders}</p>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">👥</div>
+                        <div className="stat-info">
+                            <h3>Total Customers</h3>
+                            <p className="stat-number">{stats.totalUsers}</p>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">📦</div>
+                        <div className="stat-info">
+                            <h3>Total Products</h3>
+                            <p className="stat-number">{stats.totalProducts}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -135,13 +127,13 @@ const Analytics = () => {
                         flexDirection: 'column',
                         gap: '15px'
                     }}>
-                        <div style={{fontSize: '3rem'}}>📊</div>
+                        <div style={{fontSize: '3rem'}}>📈</div>
                         <div style={{textAlign: 'center'}}>
                             <div style={{fontSize: '1.2rem', fontWeight: '600'}}>
                                 Interactive Sales Chart
                             </div>
                             <div style={{opacity: 0.8}}>
-                                Integrate with Chart.js, D3.js, or similar library
+                                (Chart.js integration needed)
                             </div>
                         </div>
                     </div>
@@ -151,6 +143,7 @@ const Analytics = () => {
                 <div className="quick-actions">
                     <h3>Top Products</h3>
                     <div style={{padding: '20px 0'}}>
+                        {topProducts.length === 0 && <p>No products found.</p>}
                         {topProducts.map((product, index) => (
                             <div key={index} style={{
                                 display: 'flex',
@@ -174,11 +167,11 @@ const Analytics = () => {
                                     {index + 1}
                                 </div>
                                 <div style={{flex: 1}}>
-                                    <div style={{fontWeight: '600', color: '#2b2d42'}}>
+                                    <div style={{fontWeight: '600', color: '#2b2d42', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                         {product.name}
                                     </div>
                                     <div style={{fontSize: '0.8rem', color: '#6c757d'}}>
-                                        {product.sales} sales
+                                        {product.sales} sales (mock)
                                     </div>
                                 </div>
                                 <div style={{
@@ -186,39 +179,10 @@ const Analytics = () => {
                                     color: '#4361ee',
                                     fontSize: '0.9rem'
                                 }}>
-                                    {product.revenue}
+                                    ${product.revenue.toFixed(2)}
                                 </div>
                             </div>
                         ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Additional Metrics */}
-            <div className="stats-grid">
-                <div className="quick-actions">
-                    <h3>Customer Metrics</h3>
-                    <div style={{padding: '20px 0', textAlign: 'center'}}>
-                        <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>📈</div>
-                        <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#2b2d42'}}>
-                            Customer Analytics
-                        </div>
-                        <div style={{color: '#6c757d', marginTop: '10px'}}>
-                            Retention rate, acquisition cost, and lifetime value
-                        </div>
-                    </div>
-                </div>
-
-                <div className="quick-actions">
-                    <h3>Inventory Health</h3>
-                    <div style={{padding: '20px 0', textAlign: 'center'}}>
-                        <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>📦</div>
-                        <div style={{fontSize: '1.5rem', fontWeight: '700', color: '#2b2d42'}}>
-                            Stock Analysis
-                        </div>
-                        <div style={{color: '#6c757d', marginTop: '10px'}}>
-                            Low stock alerts and inventory turnover
-                        </div>
                     </div>
                 </div>
             </div>

@@ -39,32 +39,6 @@ const Login = () => {
         dispatch(loginUser(email, password));
     };
 
-    // Temporary admin login bypass
-// client/src/components/auth/Login.js - handleAdminLogin function update
-    const handleAdminLogin = () => {
-        // Create mock admin user data
-        const mockAdminUser = {
-            user: {
-                id: '1',
-                name: 'GoodDeal Admin',
-                email: 'good.deal326@gmail.com',
-                role: 'admin' // This is important
-            },
-            token: 'mock-admin-token-12345'
-        };
-
-        // Dispatch login success
-        dispatch({
-            type: 'LOGIN_SUCCESS',
-            payload: mockAdminUser
-        });
-
-        dispatch(setAlert('Admin login successful!', 'success'));
-
-        // Redirect to admin dashboard
-        navigate('/admin');
-    };
-
     return (
         <div className="login-page">
             <div className="container">
@@ -116,15 +90,6 @@ const Login = () => {
                             disabled={loading}
                         >
                             {loading ? 'Signing In...' : 'SIGN IN'}
-                        </button>
-
-                        {/* Admin Quick Login Button */}
-                        <button
-                            type="button"
-                            onClick={handleAdminLogin}
-                            className="admin-login-btn"
-                        >
-                            Quick Admin Login
                         </button>
                     </form>
 

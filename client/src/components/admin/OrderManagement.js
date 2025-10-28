@@ -1,56 +1,69 @@
+// client/src/components/admin/OrderManagement.js
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import './AdminProducts.css';
+import axios from 'axios';
+import './AdminProducts.css'; // একই স্টাইল ব্যবহার করবে
+
+// ✅ Axios instance তৈরি করুন
+const api = axios.create({
+    baseURL: 'http://localhost:5000/api',
+    timeout: 10000,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('all');
-
-    const { user } = useSelector(state => state.auth);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setOrders([
-                {
-                    id: 'ORD-0012',
-                    customer: 'John Doe',
-                    email: 'john@example.com',
-                    date: '2024-01-15',
-                    amount: '$299.99',
-                    status: 'completed',
-                    items: 2
-                },
-                {
-                    id: 'ORD-0011',
-                    customer: 'Sarah Smith',
-                    email: 'sarah@example.com',
-                    date: '2024-01-14',
-                    amount: '$156.50',
-                    status: 'processing',
-                    items: 1
-                },
-                {
-                    id: 'ORD-0010',
-                    customer: 'Mike Johnson',
-                    email: 'mike@example.com',
-                    date: '2024-01-13',
-                    amount: '$599.99',
-                    status: 'pending',
-                    items: 3
-                }
-            ]);
-            setLoading(false);
-        }, 1000);
+        fetchOrders();
     }, []);
+
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+            // ✅ GET /api/orders রুটটি অ্যাডমিন সুরক্ষিত আছে
+            const res = await api.get('/orders');
+            setOrders(res.data.orders || []);
+        } catch (error) {
+            console.error("Failed to fetch orders:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            const res = await api.put(`/orders/${orderId}/status`, { status: newStatus });
+            setOrders(prev => prev.map(order =>
+                order._id === orderId ? res.data.order : order
+            ));
+        } catch (error) {
+            console.error("Failed to update order status:", error);
+            alert("Failed to update status");
+        }
+    };
 
     const getStatusBadge = (status) => {
         const statusConfig = {
-            pending: { color: '#ffc107', bg: '#fff3cd', label: 'Pending' },
-            processing: { color: '#17a2b8', bg: '#d1ecf1', label: 'Processing' },
-            completed: { color: '#28a745', bg: '#d4edda', label: 'Completed' },
-            cancelled: { color: '#dc3545', bg: '#f8d7da', label: 'Cancelled' }
+            pending: { color: '#f39c12', bg: '#fff3cd', label: 'Pending' },
+            processing: { color: '#3498db', bg: '#d1ecf1', label: 'Processing' },
+            shipped: { color: '#17a2b8', bg: '#d1ecf1', label: 'Shipped' },
+            delivered: { color: '#27ae60', bg: '#d4edda', label: 'Delivered' },
+            cancelled: { color: '#e74c3c', bg: '#f8d7da', label: 'Cancelled' }
         };
 
         const config = statusConfig[status] || statusConfig.pending;
@@ -69,11 +82,15 @@ const OrderManagement = () => {
         );
     };
 
-    const updateOrderStatus = (orderId, newStatus) => {
-        setOrders(prev => prev.map(order =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-        ));
-    };
+    const filteredOrders = orders.filter(order => {
+        const matchesFilter = statusFilter === 'all' || order.orderStatus === statusFilter;
+        const matchesSearch = searchTerm === '' ||
+            order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesFilter && matchesSearch;
+    });
 
     if (loading) {
         return (
@@ -97,7 +114,9 @@ const OrderManagement = () => {
                     <span className="search-icon">🔍</span>
                     <input
                         type="text"
-                        placeholder="Search orders by ID, customer, or email..."
+                        placeholder="Search orders by ID, customer name, or email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="filter-group">
@@ -109,7 +128,8 @@ const OrderManagement = () => {
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="processing">Processing</option>
-                        <option value="completed">Completed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
@@ -117,12 +137,20 @@ const OrderManagement = () => {
 
             {/* Orders Grid */}
             <div className="products-grid">
-                {orders.map((order) => (
-                    <div key={order.id} className="product-card">
+                {filteredOrders.length === 0 && (
+                    <div className="empty-state" style={{gridColumn: '1 / -1'}}>
+                        <div className="empty-icon">📋</div>
+                        <h3>No Orders Found</h3>
+                        <p>Orders will appear here as customers place them</p>
+                    </div>
+                )}
+
+                {filteredOrders.map((order) => (
+                    <div key={order._id} className="product-card">
                         <div className="product-info">
                             <div className="product-header">
-                                <h3 className="product-name">{order.id}</h3>
-                                {getStatusBadge(order.status)}
+                                <h3 className="product-name" style={{fontSize: '1rem', wordBreak: 'break-all'}}>ID: {order._id}</h3>
+                                {getStatusBadge(order.orderStatus)}
                             </div>
 
                             <div style={{marginBottom: '20px'}}>
@@ -132,7 +160,7 @@ const OrderManagement = () => {
                                     marginBottom: '8px'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Customer:</span>
-                                    <span style={{fontWeight: '600'}}>{order.customer}</span>
+                                    <span style={{fontWeight: '600'}}>{order.user.name}</span>
                                 </div>
                                 <div style={{
                                     display: 'flex',
@@ -140,7 +168,7 @@ const OrderManagement = () => {
                                     marginBottom: '8px'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Email:</span>
-                                    <span>{order.email}</span>
+                                    <span>{order.user.email}</span>
                                 </div>
                                 <div style={{
                                     display: 'flex',
@@ -148,7 +176,7 @@ const OrderManagement = () => {
                                     marginBottom: '8px'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Date:</span>
-                                    <span>{order.date}</span>
+                                    <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                                 </div>
                                 <div style={{
                                     display: 'flex',
@@ -156,33 +184,28 @@ const OrderManagement = () => {
                                     marginBottom: '8px'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Amount:</span>
-                                    <span style={{fontWeight: '700', color: '#4361ee'}}>{order.amount}</span>
+                                    <span style={{fontWeight: '700', color: '#4361ee'}}>${order.totalAmount.toFixed(2)}</span>
                                 </div>
                                 <div style={{
                                     display: 'flex',
                                     justifyContent: 'space-between'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Items:</span>
-                                    <span>{order.items} items</span>
+                                    <span>{order.items.length} items</span>
                                 </div>
                             </div>
 
                             <div className="product-actions">
-                                <button
-                                    className="btn btn-outline"
-                                    onClick={() => {/* View order details */}}
-                                >
-                                    👁️ View
-                                </button>
                                 <select
                                     className="filter-select"
-                                    value={order.status}
-                                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                    value={order.orderStatus}
+                                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
                                     style={{flex: 1}}
                                 >
                                     <option value="pending">Pending</option>
                                     <option value="processing">Processing</option>
-                                    <option value="completed">Completed</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
                                     <option value="cancelled">Cancelled</option>
                                 </select>
                             </div>
@@ -190,15 +213,6 @@ const OrderManagement = () => {
                     </div>
                 ))}
             </div>
-
-            {/* Empty State */}
-            {orders.length === 0 && (
-                <div className="empty-state">
-                    <div className="empty-icon">📋</div>
-                    <h3>No Orders Found</h3>
-                    <p>Orders will appear here as customers place them</p>
-                </div>
-            )}
         </div>
     );
 };

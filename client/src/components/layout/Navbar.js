@@ -56,7 +56,7 @@ const Navbar = () => {
                         <>
                             {user && user.role === 'admin' && (
                                 <Link to="/admin" className="nav-link admin-link" onClick={closeMenu}>
-                                    🛠️ Admin Panel
+                                    🛠️ Admin Dashboard
                                 </Link>
                             )}
                             <Link to="/cart" className="nav-link" onClick={closeMenu}>

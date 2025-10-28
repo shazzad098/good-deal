@@ -1,58 +1,60 @@
+// client/src/components/admin/UserManagement.js
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import './AdminProducts.css';
+import axios from 'axios';
+import './AdminProducts.css'; // একই স্টাইল ব্যবহার করবে
+
+// ✅ Axios instance তৈরি করুন
+const api = axios.create({
+    baseURL: 'http://localhost:5000/api',
+    timeout: 10000,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [roleFilter, setRoleFilter] = useState('all');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { user: currentUser } = useSelector(state => state.auth);
 
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            setUsers([
-                {
-                    id: 1,
-                    name: 'John Doe',
-                    email: 'john@example.com',
-                    role: 'admin',
-                    joinDate: '2024-01-01',
-                    status: 'active',
-                    orders: 12
-                },
-                {
-                    id: 2,
-                    name: 'Sarah Smith',
-                    email: 'sarah@example.com',
-                    role: 'customer',
-                    joinDate: '2024-01-05',
-                    status: 'active',
-                    orders: 5
-                },
-                {
-                    id: 3,
-                    name: 'Mike Johnson',
-                    email: 'mike@example.com',
-                    role: 'customer',
-                    joinDate: '2024-01-10',
-                    status: 'inactive',
-                    orders: 0
-                }
-            ]);
-            setLoading(false);
-        }, 1000);
+        fetchUsers();
     }, []);
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            // ✅ নতুন /api/admin/users রুট ব্যবহার করুন
+            const res = await api.get('/admin/users');
+            setUsers(res.data.users || []);
+        } catch (error) {
+            console.error("Failed to fetch users:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getRoleBadge = (role) => {
         const roleConfig = {
-            admin: { color: '#dc3545', bg: '#f8d7da', label: 'Admin' },
-            customer: { color: '#6c757d', bg: '#e9ecef', label: 'Customer' },
-            vendor: { color: '#fd7e14', bg: '#ffe5d0', label: 'Vendor' }
+            admin: { color: '#e74c3c', bg: '#f8d7da', label: 'Admin' },
+            user: { color: '#6c757d', bg: '#e9ecef', label: 'User' }
         };
 
-        const config = roleConfig[role] || roleConfig.customer;
+        const config = roleConfig[role] || roleConfig.user;
         return (
             <span style={{
                 background: config.bg,
@@ -68,36 +70,22 @@ const UserManagement = () => {
         );
     };
 
-    const getStatusBadge = (status) => {
-        return (
-            <span style={{
-                background: status === 'active' ? '#d4edda' : '#f8d7da',
-                color: status === 'active' ? '#155724' : '#721c24',
-                padding: '6px 12px',
-                borderRadius: '20px',
-                fontSize: '0.8rem',
-                fontWeight: '600',
-                textTransform: 'capitalize'
-            }}>
-                {status}
-            </span>
-        );
-    };
-
+    // (Note: User role update functionality needs a backend endpoint)
     const updateUserRole = (userId, newRole) => {
-        setUsers(prev => prev.map(user =>
-            user.id === userId ? { ...user, role: newRole } : user
-        ));
+        console.log(`Updating user ${userId} to ${newRole} (needs backend implementation)`);
+        // setUsers(prev => prev.map(user =>
+        //     user._id === userId ? { ...user, role: newRole } : user
+        // ));
     };
 
-    const toggleUserStatus = (userId) => {
-        setUsers(prev => prev.map(user =>
-            user.id === userId ? {
-                ...user,
-                status: user.status === 'active' ? 'inactive' : 'active'
-            } : user
-        ));
-    };
+    const filteredUsers = users.filter(user => {
+        const matchesFilter = roleFilter === 'all' || user.role === roleFilter;
+        const matchesSearch = searchTerm === '' ||
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesFilter && matchesSearch;
+    });
 
     if (loading) {
         return (
@@ -127,8 +115,8 @@ const UserManagement = () => {
                 <div className="stat-card">
                     <div className="stat-icon">🛒</div>
                     <div className="stat-info">
-                        <h3>Active Customers</h3>
-                        <p className="stat-number">{users.filter(u => u.role === 'customer' && u.status === 'active').length}</p>
+                        <h3>Customers</h3>
+                        <p className="stat-number">{users.filter(u => u.role === 'user').length}</p>
                     </div>
                 </div>
                 <div className="stat-card">
@@ -147,6 +135,8 @@ const UserManagement = () => {
                     <input
                         type="text"
                         placeholder="Search users by name or email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="filter-group">
@@ -157,15 +147,23 @@ const UserManagement = () => {
                     >
                         <option value="all">All Roles</option>
                         <option value="admin">Admin</option>
-                        <option value="customer">Customer</option>
+                        <option value="user">User</option>
                     </select>
                 </div>
             </div>
 
             {/* Users Grid */}
             <div className="products-grid">
-                {users.map((user) => (
-                    <div key={user.id} className="product-card">
+                {filteredUsers.length === 0 && (
+                    <div className="empty-state" style={{gridColumn: '1 / -1'}}>
+                        <div className="empty-icon">👥</div>
+                        <h3>No Users Found</h3>
+                        <p>User accounts will appear here as they register</p>
+                    </div>
+                )}
+
+                {filteredUsers.map((user) => (
+                    <div key={user._id} className="product-card">
                         <div className="product-info">
                             <div className="product-header">
                                 <h3 className="product-name">{user.name}</h3>
@@ -187,57 +185,31 @@ const UserManagement = () => {
                                     marginBottom: '8px'
                                 }}>
                                     <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Join Date:</span>
-                                    <span>{user.joinDate}</span>
-                                </div>
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    marginBottom: '8px'
-                                }}>
-                                    <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Status:</span>
-                                    {getStatusBadge(user.status)}
-                                </div>
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between'
-                                }}>
-                                    <span style={{color: '#6c757d', fontSize: '0.9rem'}}>Orders:</span>
-                                    <span>{user.orders} orders</span>
+                                    <span>{new Date(user.createdAt).toLocaleDateString()}</span>
                                 </div>
                             </div>
 
                             <div className="product-actions">
-                                <button
-                                    className="btn btn-outline"
-                                    onClick={() => toggleUserStatus(user.id)}
-                                >
-                                    {user.status === 'active' ? '⏸️ Suspend' : '▶️ Activate'}
-                                </button>
-                                {currentUser.id !== user.id && (
+                                {currentUser._id !== user._id && (
                                     <select
                                         className="filter-select"
                                         value={user.role}
-                                        onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                        onChange={(e) => updateUserRole(user._id, e.target.value)}
                                         style={{flex: 1}}
+                                        disabled // Role update API তৈরি না করা পর্যন্ত disabled
                                     >
-                                        <option value="customer">Customer</option>
+                                        <option value="user">User</option>
                                         <option value="admin">Admin</option>
                                     </select>
+                                )}
+                                {currentUser._id === user._id && (
+                                    <p style={{textAlign: 'center', flex: 1, color: '#6c757d'}}> (Current User)</p>
                                 )}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
-
-            {/* Empty State */}
-            {users.length === 0 && (
-                <div className="empty-state">
-                    <div className="empty-icon">👥</div>
-                    <h3>No Users Found</h3>
-                    <p>User accounts will appear here as they register</p>
-                </div>
-            )}
         </div>
     );
 };

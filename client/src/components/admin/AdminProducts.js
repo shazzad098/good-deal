@@ -101,7 +101,9 @@ const AdminProducts = () => {
             });
             fetchProducts();
         } catch (error) {
-            console.error('Error saving product:', error);
+            // ✅ FIX: সার্ভার থেকে আসা আসল এরর মেসেজটি লগ করুন
+            console.error('Error saving product:', error.response ? error.response.data : error.message);
+
             const errorMsg = error.response?.data?.message || 'Failed to save product';
             showMessage('error', errorMsg);
         }
@@ -344,10 +346,14 @@ const AdminProducts = () => {
                                             required
                                         >
                                             <option value="">Select Category</option>
-                                            <option value="electronics">Electronics</option>
-                                            <option value="clothing">Clothing</option>
-                                            <option value="mobile-phones">Mobile Phones</option>
-                                            <option value="accessories">Accessories</option>
+                                            <option value="Electronics">Electronics</option>
+                                            <option value="Clothing">Clothing</option>
+                                            <option value="Books">Books</option>
+                                            <option value="Home & Garden">Home & Garden</option>
+                                            <option value="Sports">Sports</option>
+                                            <option value="Beauty">Beauty</option>
+                                            <option value="Toys">Toys</option>
+                                            <option value="Automotive">Automotive</option>
                                         </select>
                                     </div>
 

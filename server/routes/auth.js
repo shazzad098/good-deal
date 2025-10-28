@@ -4,8 +4,9 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
-// server/routes/auth.js
+// ... (আপনার existing /register কোড) ...
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -56,7 +57,8 @@ router.post('/register', async (req, res) => {
                     user: {
                         id: user.id,
                         name: user.name,
-                        email: user.email
+                        email: user.email,
+                        role: user.role // ✅ FIX: Return role on register
                     }
                 });
             }
@@ -70,6 +72,8 @@ router.post('/register', async (req, res) => {
         });
     }
 });
+
+// ... (আপনার existing /login কোড) ...
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -107,6 +111,20 @@ router.post('/login', async (req, res) => {
             }
         );
 
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// ✅ FIX: Add route to get user data from token
+// @route   GET /api/auth/user
+// @desc    Get user data
+// @access  Private
+router.get('/user', auth, async (req, res) => {
+    try {
+        // req.user is already populated by the auth middleware
+        res.json(req.user);
     } catch (error) {
         console.error('Server error:', error);
         res.status(500).json({ message: 'Server error' });

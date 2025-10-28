@@ -1,12 +1,36 @@
+// client/src/components/admin/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
-import ProductManagement from './ProductManagement';
+import axios from 'axios'; // ✅ axios ইম্পোর্ট করুন
+
+// ✅ FIX: সঠিক প্রোডাক্ট কম্পোনেন্ট ইম্পোর্ট করুন
+import AdminProducts from './AdminProducts';
 import OrderManagement from './OrderManagement';
 import UserManagement from './UserManagement';
 import Analytics from './Analytics';
 import './AdminDashboard.css';
+
+// ✅ Axios instance তৈরি করুন
+const api = axios.create({
+    baseURL: 'http://localhost:5000/api',
+    timeout: 10000,
+});
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -152,7 +176,8 @@ const AdminDashboard = () => {
                 <div className="admin-content">
                     <Routes>
                         <Route path="dashboard" element={<DashboardHome />} />
-                        <Route path="products" element={<ProductManagement />} />
+                        {/* ✅ FIX: সঠিক কম্পোনেন্ট ব্যবহার করুন */}
+                        <Route path="products" element={<AdminProducts />} />
                         <Route path="orders" element={<OrderManagement />} />
                         <Route path="users" element={<UserManagement />} />
                         <Route path="analytics" element={<Analytics />} />
@@ -164,8 +189,40 @@ const AdminDashboard = () => {
     );
 };
 
-// Dashboard Home Component (same as before)
+// Dashboard Home Component (Live Data সহ)
 const DashboardHome = () => {
+    const [stats, setStats] = useState({
+        totalRevenue: 0,
+        totalProducts: 0,
+        totalUsers: 0,
+        totalOrders: 0
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                setLoading(true);
+                const res = await api.get('/admin/stats');
+                setStats(res.data);
+            } catch (error) {
+                console.error("Failed to fetch stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading dashboard...</p>
+            </div>
+        );
+    }
+
     return (
         <div>
             <div className="dashboard-header">
@@ -178,32 +235,32 @@ const DashboardHome = () => {
                     <div className="stat-icon">💰</div>
                     <div className="stat-info">
                         <h3>Total Revenue</h3>
-                        <p className="stat-number">$12,450</p>
-                        <span className="stat-trend positive">+12% from last month</span>
+                        <p className="stat-number">${stats.totalRevenue.toFixed(2)}</p>
+                        <span className="stat-trend positive">From all orders</span>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon">📦</div>
                     <div className="stat-info">
                         <h3>Total Products</h3>
-                        <p className="stat-number">156</p>
-                        <span className="stat-trend positive">+5% from last month</span>
+                        <p className="stat-number">{stats.totalProducts}</p>
+                        <span className="stat-trend positive">In catalog</span>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon">👥</div>
                     <div className="stat-info">
                         <h3>Total Users</h3>
-                        <p className="stat-number">892</p>
-                        <span className="stat-trend positive">+8% from last month</span>
+                        <p className="stat-number">{stats.totalUsers}</p>
+                        <span className="stat-trend positive">Registered users</span>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon">📋</div>
                     <div className="stat-info">
                         <h3>Total Orders</h3>
-                        <p className="stat-number">324</p>
-                        <span className="stat-trend positive">+15% from last month</span>
+                        <p className="stat-number">{stats.totalOrders}</p>
+                        <span className="stat-trend positive">Received</span>
                     </div>
                 </div>
             </div>
@@ -230,32 +287,7 @@ const DashboardHome = () => {
                 </div>
             </div>
 
-            <div className="recent-activity">
-                <h3>Recent Activity</h3>
-                <div className="activity-list">
-                    <div className="activity-item">
-                        <div className="activity-icon">📦</div>
-                        <div className="activity-content">
-                            <p>New product "Wireless Headphones" added</p>
-                            <span className="activity-time">2 hours ago</span>
-                        </div>
-                    </div>
-                    <div className="activity-item">
-                        <div className="activity-icon">💰</div>
-                        <div className="activity-content">
-                            <p>Order #1234 completed - $250.00</p>
-                            <span className="activity-time">5 hours ago</span>
-                        </div>
-                    </div>
-                    <div className="activity-item">
-                        <div className="activity-icon">👥</div>
-                        <div className="activity-content">
-                            <p>New user registration - john@example.com</p>
-                            <span className="activity-time">Yesterday</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* Recent activity can be implemented later by fetching recent orders/users */}
         </div>
     );
 };
