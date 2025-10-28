@@ -1,4 +1,3 @@
-// client/src/components/admin/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,6 +10,7 @@ import './AdminDashboard.css';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for mobile menu
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -20,6 +20,18 @@ const AdminDashboard = () => {
         const path = location.pathname.split('/').pop();
         setActiveTab(path || 'dashboard');
     }, [location]);
+
+    // Toggle sidebar visibility on mobile
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    // Close sidebar when navigating on mobile
+    const handleNavClick = () => {
+        if (window.innerWidth <= 768) {
+            setIsSidebarOpen(false);
+        }
+    };
 
     // Double check if user is admin
     if (!user || user.role !== 'admin') {
@@ -52,6 +64,16 @@ const AdminDashboard = () => {
                     <div className="admin-brand">
                         <h2>🛍️ GoodDeal Admin</h2>
                     </div>
+                    {/* Hamburger Menu Button (Visible only on mobile) */}
+                    <button
+                        className="hamburger-menu"
+                        onClick={toggleSidebar}
+                        aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
+                    >
+                        <div className={`hamburger-line ${isSidebarOpen ? 'top' : ''}`}></div>
+                        <div className={`hamburger-line ${isSidebarOpen ? 'middle' : ''}`}></div>
+                        <div className={`hamburger-line ${isSidebarOpen ? 'bottom' : ''}`}></div>
+                    </button>
                     <div className="admin-header-actions">
                         <span className="admin-welcome">
                             Welcome, {user?.name}
@@ -73,7 +95,8 @@ const AdminDashboard = () => {
             </div>
 
             <div className="admin-layout">
-                <div className="admin-sidebar">
+                {/* Sidebar / Mobile Menu */}
+                <div className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
                     <div className="admin-profile">
                         <div className="admin-avatar">👨‍💼</div>
                         <div className="admin-info">
@@ -86,40 +109,45 @@ const AdminDashboard = () => {
                         <Link
                             to="dashboard"
                             className={activeTab === 'dashboard' ? 'active' : ''}
-                            onClick={() => setActiveTab('dashboard')}
+                            onClick={() => { setActiveTab('dashboard'); handleNavClick(); }}
                         >
                             📊 Dashboard
                         </Link>
                         <Link
                             to="products"
                             className={activeTab === 'products' ? 'active' : ''}
-                            onClick={() => setActiveTab('products')}
+                            onClick={() => { setActiveTab('products'); handleNavClick(); }}
                         >
                             📦 Products
                         </Link>
                         <Link
                             to="orders"
                             className={activeTab === 'orders' ? 'active' : ''}
-                            onClick={() => setActiveTab('orders')}
+                            onClick={() => { setActiveTab('orders'); handleNavClick(); }}
                         >
                             📋 Orders
                         </Link>
                         <Link
                             to="users"
                             className={activeTab === 'users' ? 'active' : ''}
-                            onClick={() => setActiveTab('users')}
+                            onClick={() => { setActiveTab('users'); handleNavClick(); }}
                         >
                             👥 Users
                         </Link>
                         <Link
                             to="analytics"
                             className={activeTab === 'analytics' ? 'active' : ''}
-                            onClick={() => setActiveTab('analytics')}
+                            onClick={() => { setActiveTab('analytics'); handleNavClick(); }}
                         >
                             📈 Analytics
                         </Link>
                     </nav>
                 </div>
+
+                {/* Overlay for mobile menu */}
+                {isSidebarOpen && (
+                    <div className="sidebar-overlay" onClick={toggleSidebar}></div>
+                )}
 
                 <div className="admin-content">
                     <Routes>
@@ -136,7 +164,7 @@ const AdminDashboard = () => {
     );
 };
 
-// Dashboard Home Component
+// Dashboard Home Component (same as before)
 const DashboardHome = () => {
     return (
         <div>

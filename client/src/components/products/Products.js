@@ -13,34 +13,47 @@ const Products = () => {
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); // এটা add করুন
+    const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedImage, setSelectedImage] = useState(0);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
-    const [showGallery, setShowGallery] = useState(false);
 
     useEffect(() => {
-        // Check করুন id আছে কিনা
         if (id && id !== 'undefined') {
             fetchProduct();
         } else {
             setError('Invalid product ID');
             setLoading(false);
         }
-    }, [id]); // এখানে id dependency add করতে হবে
+    }, [id]);
 
     const fetchProduct = async () => {
         try {
             setLoading(true);
-            setError(null); // Error reset করুন
+            setError(null);
 
-            console.log('Fetching product with ID:', id); // Debug করার জন্য
+            console.log('Fetching product with ID:', id);
 
-            const res = await axios.get(`/api/products/${id}`);
+            // API endpoint check koren - different possible endpoints
+            let res;
+            try {
+                res = await axios.get(`/api/products/${id}`);
+            } catch (apiError) {
+                // Alternative endpoint try koren
+                console.log('Trying alternative endpoint...');
+                res = await axios.get(`/api/product/${id}`);
+            }
 
-            console.log('Product data:', res.data); // Response check করুন
+            console.log('Product data:', res.data);
 
-            setProduct(res.data.product);
+            // Different response formats handle korar jonno
+            if (res.data.product) {
+                setProduct(res.data.product);
+            } else if (res.data) {
+                setProduct(res.data);
+            } else {
+                throw new Error('Invalid product data format');
+            }
         } catch (error) {
             console.error('Error fetching product:', error);
             setError(error.response?.data?.message || 'Failed to fetch product');
@@ -49,7 +62,55 @@ const Products = () => {
         }
     };
 
-    // বাকি code একই থাকবে...
+    const incrementQuantity = () => {
+        if (product && quantity < product.stock) {
+            setQuantity(quantity + 1);
+        }
+    };
+
+    const decrementQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(quantity - 1);
+        }
+    };
+
+    const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            alert('Please login to add items to cart');
+            return;
+        }
+
+        if (!product || product.stock === 0) return;
+
+        try {
+            setIsAddingToCart(true);
+            await dispatch(addToCart({
+                productId: product._id || product.id,
+                quantity,
+                name: product.name,
+                price: product.price,
+                image: product.images?.[0] || product.image
+            })).unwrap();
+
+            alert('Product added to cart successfully!');
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Failed to add product to cart');
+        } finally {
+            setIsAddingToCart(false);
+        }
+    };
+
+    const getCategoryIcon = (category) => {
+        const icons = {
+            'Electronics': '📱',
+            'Clothing': '👕',
+            'Books': '📚',
+            'Home & Garden': '🏠',
+            'Sports': '⚽'
+        };
+        return icons[category] || '📦';
+    };
 
     if (loading) {
         return (
@@ -64,18 +125,22 @@ const Products = () => {
         );
     }
 
-    // Error state add করুন
     if (error) {
         return (
             <div className="product-page">
                 <div className="container">
                     <div className="empty-state">
                         <div className="empty-icon">❌</div>
-                        <h3>Error</h3>
+                        <h3>Error Loading Product</h3>
                         <p>{error}</p>
-                        <Link to="/products" className="btn btn-primary">
-                            Browse All Products
-                        </Link>
+                        <div className="action-buttons">
+                            <button onClick={fetchProduct} className="btn btn-secondary">
+                                Try Again
+                            </button>
+                            <Link to="/products" className="btn btn-primary">
+                                Browse All Products
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -111,24 +176,26 @@ const Products = () => {
                     <span className="breadcrumb-current">{product.name}</span>
                 </div>
 
-                {/* Products Header */}
+                {/* Product Header */}
                 <div className="product-header">
                     <h1 className="product-title">{product.name}</h1>
                     <div className="product-meta">
                         <span className="product-category">
                             {getCategoryIcon(product.category)} {product.category}
                         </span>
-                        <span className="product-sku">SKU: {product._id.slice(-8)}</span>
+                        <span className="product-sku">
+                            SKU: {product._id ? product._id.slice(-8) : product.id?.slice(-8) || 'N/A'}
+                        </span>
                     </div>
                 </div>
 
-                {/* Products Content */}
+                {/* Product Content */}
                 <div className="product-content">
                     {/* Image Gallery */}
                     <div className="product-gallery">
                         <div className="main-image">
                             <img
-                                src={product.images?.[selectedImage] || '/images/placeholder.jpg'}
+                                src={product.images?.[selectedImage] || product.image || '/images/placeholder.jpg'}
                                 alt={product.name}
                                 onError={(e) => {
                                     e.target.src = '/images/placeholder.jpg';
@@ -139,7 +206,7 @@ const Products = () => {
                             )}
                         </div>
 
-                        {product.images && product.images.length > 1 && (
+                        {(product.images && product.images.length > 1) && (
                             <div className="thumbnail-gallery">
                                 {product.images.map((image, index) => (
                                     <div
@@ -147,20 +214,26 @@ const Products = () => {
                                         className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
                                         onClick={() => setSelectedImage(index)}
                                     >
-                                        <img src={image} alt={`Product thumbnail ${index + 1}`} />
+                                        <img
+                                            src={image}
+                                            alt={`${product.name} thumbnail ${index + 1}`}
+                                            onError={(e) => {
+                                                e.target.src = '/images/placeholder.jpg';
+                                            }}
+                                        />
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Products Info */}
+                    {/* Product Info */}
                     <div className="product-info">
                         {/* Price Section */}
                         <div className="price-section">
-                            <span className="product-price">${product.price}</span>
+                            <span className="product-price">${product.price?.toFixed(2)}</span>
                             {product.originalPrice && product.originalPrice > product.price && (
-                                <span className="product-original-price">${product.originalPrice}</span>
+                                <span className="product-original-price">${product.originalPrice?.toFixed(2)}</span>
                             )}
                             {product.discountPercentage && (
                                 <span className="discount-badge">
@@ -174,33 +247,6 @@ const Products = () => {
                             <h3>Description</h3>
                             <p>{product.description}</p>
                         </div>
-
-                        {/* Features */}
-                        {product.features && product.features.length > 0 && (
-                            <div className="product-features">
-                                <h3>Features</h3>
-                                <ul>
-                                    {product.features.map((feature, index) => (
-                                        <li key={index}>{feature}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        {/* Specifications */}
-                        {product.specifications && Object.keys(product.specifications).length > 0 && (
-                            <div className="product-specs">
-                                <h3>Specifications</h3>
-                                <div className="specs-grid">
-                                    {Object.entries(product.specifications).map(([key, value]) => (
-                                        <div key={key} className="spec-item">
-                                            <span className="spec-label">{key}:</span>
-                                            <span className="spec-value">{value}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
 
                         {/* Quantity Selector */}
                         <div className="quantity-selector">
@@ -261,7 +307,7 @@ const Products = () => {
                         {/* Admin Actions */}
                         {isAuthenticated && user?.role === 'admin' && (
                             <div className="admin-actions">
-                                <Link to={`/admin/products/${product._id}/edit`} className="btn btn-secondary">
+                                <Link to={`/admin/products/edit/${product._id || product.id}`} className="btn btn-secondary">
                                     Edit Product
                                 </Link>
                                 <button className="btn btn-danger">
@@ -272,45 +318,17 @@ const Products = () => {
                     </div>
                 </div>
 
-                {/* Related Products */}
+                {/* Related Products - Optional Section */}
                 <div className="related-products">
-                    <h2>Related Products</h2>
+                    <h2>You Might Also Like</h2>
                     <div className="products-grid">
-                        {/* This would be populated with related products */}
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="product-card">
-                                <div className="product-image">
-                                    <img
-                                        src="/images/placeholder.jpg"
-                                        alt="Related product"
-                                    />
-                                    <div className="product-overlay">
-                                        <Link to={`/products/${i}`} className="btn btn-primary">
-                                            View Details
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="product-content">
-                                    <span className="product-category">electronics</span>
-                                    <h3 className="product-name">Related Product {i}</h3>
-                                    <p className="product-description">This is a related product description.</p>
-                                    <div className="product-footer">
-                                        <div className="price-section">
-                                            <span className="product-price">$99.99</span>
-                                        </div>
-                                        <span className="product-stock in-stock">10 in stock</span>
-                                    </div>
-                                    <div className="product-actions">
-                                        <Link to={`/products/${i}`} className="btn btn-outline">
-                                            View Product
-                                        </Link>
-                                        <button className="btn btn-primary">
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                        {/* Related products would go here */}
+                        <div className="related-placeholder">
+                            <p>More products coming soon...</p>
+                            <Link to="/products" className="btn btn-primary">
+                                Browse All Products
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

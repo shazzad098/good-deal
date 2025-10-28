@@ -87,7 +87,8 @@ const Home = () => {
                     <div className="hero-overlay"></div>
                 </div>
                 <div className="hero-content">
-                    <div className="container">
+                    <div className="hero-grid">
+                        {/* Left: Text */}
                         <div className="hero-text">
                             <div className="hero-badge">
                                 <span className="badge-text">Premium Quality</span>
@@ -101,30 +102,31 @@ const Home = () => {
                                 Quality guaranteed, satisfaction assured.
                             </p>
                             <div className="hero-actions">
-                                <Link to="/products" className="btn btn-primary btn-large">
+                                <Link to="/products" className="btn btn-primary">
                                     Shop Collection
                                     <span className="btn-icon">→</span>
                                 </Link>
-                                <Link to="/deals" className="btn btn-secondary btn-large">
+                                <Link to="/deals" className="btn btn-secondary">
                                     View Special Offers
                                 </Link>
                             </div>
                         </div>
 
-                    </div>
-                </div>
-                <div className="hero-stats">
-                    <div className="stat-item">
-                        <div className="stat-number">{stats.products}+</div>
-                        <div className="stat-label">Products</div>
-                    </div>
-                    <div className="stat-item">
-                        <div className="stat-number">{stats.customers}+</div>
-                        <div className="stat-label">Happy Customers</div>
-                    </div>
-                    <div className="stat-item">
-                        <div className="stat-number">{stats.orders}+</div>
-                        <div className="stat-label">Orders Delivered</div>
+                        {/* Right: Stats */}
+                        <div className="hero-stats">
+                            <div className="stat-item">
+                                <div className="stat-number">{stats.products}+</div>
+                                <div className="stat-label">Products</div>
+                            </div>
+                            <div className="stat-item">
+                                <div className="stat-number">{stats.customers}+</div>
+                                <div className="stat-label">Happy Customers</div>
+                            </div>
+                            <div className="stat-item">
+                                <div className="stat-number">{stats.orders}+</div>
+                                <div className="stat-label">Orders Delivered</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

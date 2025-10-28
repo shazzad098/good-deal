@@ -1,11 +1,14 @@
-// server/routes/admin.js - TEMPORARY FIX
+// server/routes/admin.js
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
-// const auth = require('../middleware/auth'); // Comment out করে রাখুন
-// const admin = require("../middleware/admin"); // Comment out করে রাখুন
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
-// GET all products
+// Middleware to check if user is admin
+router.use(auth, admin);
+
+// GET all products (Admin only)
 router.get('/products', async (req, res) => {
     try {
         const products = await Product.find().sort({ createdAt: -1 });
@@ -14,7 +17,7 @@ router.get('/products', async (req, res) => {
             products
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching products:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -22,7 +25,7 @@ router.get('/products', async (req, res) => {
     }
 });
 
-// POST - Create new product
+// POST - Create new product (Admin only)
 router.post('/products', async (req, res) => {
     try {
         const { name, description, price, category, stock, images } = req.body;
@@ -47,11 +50,11 @@ router.post('/products', async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Products created successfully',
+            message: 'Product created successfully',
             product
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error creating product:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -59,7 +62,7 @@ router.post('/products', async (req, res) => {
     }
 });
 
-// PUT - Update product (FIXED)
+// PUT - Update product (Admin only)
 router.put('/products/:id', async (req, res) => {
     try {
         const { name, description, price, category, stock, images } = req.body;
@@ -69,11 +72,11 @@ router.put('/products/:id', async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Products not found'
+                message: 'Product not found'
             });
         }
 
-        product = await Product.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
             {
                 name,
@@ -88,11 +91,11 @@ router.put('/products/:id', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Products updated successfully',
-            product
+            message: 'Product updated successfully',
+            product: updatedProduct
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error updating product:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -100,7 +103,7 @@ router.put('/products/:id', async (req, res) => {
     }
 });
 
-// DELETE - Delete product (FIXED)
+// DELETE - Delete product (Admin only)
 router.delete('/products/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -108,7 +111,7 @@ router.delete('/products/:id', async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Products not found'
+                message: 'Product not found'
             });
         }
 
@@ -116,10 +119,10 @@ router.delete('/products/:id', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Products deleted successfully'
+            message: 'Product deleted successfully'
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error deleting product:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
