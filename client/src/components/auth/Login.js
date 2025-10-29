@@ -13,8 +13,9 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    // Alert state select kora bondho kora hocche
     const { isAuthenticated, loading } = useSelector(state => state.auth);
-    const alert = useSelector(state => state.alert);
+    // const alert = useSelector(state => state.alert); // <-- REMOVED
 
     const { email, password } = formData;
 
@@ -45,11 +46,13 @@ const Login = () => {
                 <div className="login-form-container">
                     <h2>Sign In to GoodDeal</h2>
 
-                    {alert && alert.map(alert => (
+                    {/* Local alert rendering block remove kora holo */}
+                    {/* {alert && alert.map(alert => (
                         <div key={alert.id} className={`alert alert-${alert.type}`}>
                             {alert.msg}
                         </div>
                     ))}
+                    */}
 
                     <form onSubmit={onSubmit}>
                         <div className="form-group">

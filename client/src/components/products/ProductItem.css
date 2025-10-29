@@ -32,7 +32,7 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     white-space: nowrap;
 }
 
@@ -120,7 +120,7 @@
     color: #64748b;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     margin-bottom: 6px;
     display: block;
 }
@@ -221,7 +221,6 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border: 1px solid transparent;
     flex: 1;
 }
 

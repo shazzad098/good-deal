@@ -20,6 +20,8 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import PrivateRoute from './components/routing/PrivateRoute';
 import AdminRoute from './components/routing/AdminRoute';
 import { loadUser } from './actions/authActions';
+import AboutUs from './components/pages/AboutUs';
+import ContactUs from './components/pages/ContactUs';
 
 // AppLayout Component
 const AppLayout = () => {
@@ -44,6 +46,8 @@ const AppLayout = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/cart" element={<Cart />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/contact" element={<ContactUs />} />
 
                     {/* Admin Routes */}
                     <Route

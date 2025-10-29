@@ -16,7 +16,7 @@ const Register = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, loading } = useSelector(state => state.auth);
-    const alert = useSelector(state => state.alert);
+    // const alert = useSelector(state => state.alert); // <-- REMOVED
 
     const { name, email, password, password2 } = formData;
 
@@ -52,11 +52,14 @@ const Register = () => {
                 <div className="register-form-container">
                     <h2>Create Your Account</h2>
 
+                    {/* Local alert rendering block remove kora holo */}
+                    {/*
                     {alert && alert.map(alert => (
                         <div key={alert.id} className={`alert alert-${alert.type}`}>
                             {alert.msg}
                         </div>
                     ))}
+                    */}
 
                     <form onSubmit={onSubmit}>
                         <div className="form-group">
