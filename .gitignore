@@ -30,3 +30,4 @@ server/package-lock.json
 
 # Database seed/output (if any)
 server/seed-output.json
+.env
