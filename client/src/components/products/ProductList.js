@@ -126,7 +126,7 @@ const ProductList = () => {
                         <h3>Admin Dashboard</h3>
                         <p>Manage your product inventory and settings</p>
                         <Link to="/admin/products" className="btn btn-admin">
-                            ⚙️ Manage Products
+                            Manage Products
                         </Link>
                     </div>
                 )}

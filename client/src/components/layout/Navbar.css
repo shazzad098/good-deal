@@ -1,20 +1,36 @@
 /* client/src/components/layout/Navbar.css */
 .navbar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0;
+}
+
+.nav-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(30, 30, 30, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: -1;
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    height: 70px;
-    max-width: 1200px;
+    padding: 0 30px;
+    height: 80px;
+    max-width: 1400px;
     margin: 0 auto;
     position: relative;
 }
@@ -23,29 +39,58 @@
     color: white;
     text-decoration: none;
     font-size: 28px;
-    font-weight: bold;
-    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     z-index: 1001;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.brand-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.brand-text {
+    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Hamburger Menu Styles */
 .hamburger {
     display: none;
     flex-direction: column;
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.hamburger:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
 }
 
 .hamburger span {
-    width: 25px;
-    height: 3px;
+    width: 22px;
+    height: 2px;
     background: white;
     margin: 3px 0;
     transition: 0.3s;
     border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger.active {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .hamburger.active span:nth-child(1) {
@@ -64,58 +109,147 @@
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 20px; /* সামান্য বেশি স্পেসিং পড়ার সুবিধার্থে */
     transition: all 0.3s ease;
 }
 
 .nav-link {
-    color: rgba(255,255,255,0.9);
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
+    padding: 8px 16px; /* padding কমানো হয়েছে */
+    border-radius: 8px; /* কম রাউন্ডিং */
+    transition: all 0.25s ease;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* গ্লাসি ইফেক্ট সম্পূর্ণ রিমুভ — শুধু সিম্পল হোভার */
+    background: transparent;
+    border: none;
+    text-shadow: none;
 }
 
 .nav-link:hover {
-    background: rgba(255,255,255,0.1);
     color: white;
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1); /* সাবল হোভার হাইলাইট */
+    transform: none; /* যান্ত্রিক এনিমেশন বন্ধ */
+    box-shadow: none;
+    border-radius: 8px;
+}
+
+.nav-icon {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* Special links: এখন শুধু টেক্সট কালার দিয়ে আইডেন্টিফাই, ব্যাকগ্রাউন্ড নয় */
+.admin-link,
+.login-link,
+.register-link {
+    background: transparent;
+    border: none;
+    font-weight: 600;
 }
 
 .admin-link {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+    color: #FFA726; /* সাবল অরেঞ্জ — ওয়ার্নিং/অ্যাডমিন ইন্ডিকেটর */
 }
 
 .admin-link:hover {
-    background: rgba(255,255,255,0.3);
+    color: #FF9800;
+    background: rgba(255, 167, 38, 0.1);
+}
+
+.login-link {
+    color: #4CAF50; /* সাবল গ্রিন — পজিটিভ অ্যাকশন */
+}
+
+.login-link:hover {
+    color: #43A047;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.register-link {
+    color: #607D8B; /* নিউট্রাল গ্রে-ব্লু (বেগুনি/নীল নয়!) */
+}
+
+.register-link:hover {
+    color: #546E7A;
+    background: rgba(96, 125, 139, 0.1);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* User Section */
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .user-greeting {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.user-name {
     color: white;
-    font-weight: 500;
-    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .logout-btn {
-    background: #e74c3c;
+    background: linear-gradient(
+            135deg,
+            rgba(231, 76, 60, 0.2) 0%,
+            rgba(192, 57, 43, 0.2) 100%
+    );
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    padding: 12px 20px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
-    font-size: 16px;
+    font-size: 15px;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
 }
 
 .logout-btn:hover {
-    background: #c0392b;
+    background: linear-gradient(
+            135deg,
+            rgba(231, 76, 60, 0.3) 0%,
+            rgba(192, 57, 43, 0.3) 100%
+    );
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+    border-color: rgba(231, 76, 60, 0.5);
+}
+
+.logout-icon {
+    font-size: 16px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 /* Mobile Overlay */
@@ -126,19 +260,24 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
     z-index: 998;
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .nav-container {
-        padding: 0 15px;
-        height: 60px;
+        padding: 0 20px;
+        height: 70px;
     }
 
     .nav-brand a {
         font-size: 24px;
+    }
+
+    .brand-icon {
+        font-size: 28px;
     }
 
     .hamburger {
@@ -149,17 +288,19 @@
         position: fixed;
         top: 0;
         right: -100%;
-        width: 280px;
+        width: 320px;
         height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        padding: 80px 30px 30px;
-        gap: 20px;
-        transition: right 0.3s ease;
+        padding: 90px 25px 30px;
+        gap: 15px;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
-        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
     }
 
     .nav-links.active {
@@ -167,33 +308,32 @@
     }
 
     .nav-link {
-        padding: 15px 20px;
+        padding: 16px 20px;
         width: 100%;
-        border-radius: 8px;
-        font-size: 18px;
-        border-left: 4px solid transparent;
+        border-radius: 12px;
+        font-size: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .nav-link:hover {
-        background: rgba(255,255,255,0.15);
-        border-left: 4px solid #3498db;
-        transform: none;
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateX(5px);
     }
 
-    .user-greeting {
-        padding: 15px 20px;
+    .user-section {
         width: 100%;
-        text-align: center;
-        background: rgba(255,255,255,0.1);
-        border-radius: 8px;
         margin: 10px 0;
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .logout-btn {
         width: 100%;
-        padding: 15px;
-        font-size: 18px;
+        padding: 16px;
+        font-size: 16px;
         margin-top: 10px;
+        justify-content: center;
     }
 
     .nav-overlay {
@@ -203,15 +343,30 @@
 
 @media (max-width: 480px) {
     .nav-container {
-        padding: 0 10px;
+        padding: 0 15px;
     }
 
     .nav-brand a {
-        font-size: 20px;
+        font-size: 22px;
+    }
+
+    .brand-icon {
+        font-size: 24px;
     }
 
     .nav-links {
         width: 100%;
-        padding: 70px 20px 20px;
+        padding: 80px 20px 20px;
+    }
+}
+
+/* Enhanced glass effect for modern browsers */
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
+    .navbar {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-links {
+        background: rgba(255, 255, 255, 0.05);
     }
 }

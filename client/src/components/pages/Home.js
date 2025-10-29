@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import './Home.css';
 
 const Home = () => {
@@ -15,10 +12,24 @@ const Home = () => {
         orders: 0
     });
 
+    // Carousel state
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
     useEffect(() => {
         fetchFeaturedProducts();
         fetchStats();
-    }, []);
+
+        // Auto play carousel
+        let interval;
+        if (isAutoPlaying) {
+            interval = setInterval(() => {
+                nextSlide();
+            }, 5000);
+        }
+
+        return () => clearInterval(interval);
+    }, [currentSlide, isAutoPlaying]);
 
     const fetchFeaturedProducts = async () => {
         try {
@@ -32,12 +43,50 @@ const Home = () => {
     };
 
     const fetchStats = async () => {
-        // Mock stats for demo
         setStats({
             products: 1250,
             customers: 8500,
             orders: 12000
         });
+    };
+
+    // Hero slides with background images + content
+    const heroSlides = [
+        {
+            image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200",
+            badge: "Premium Quality",
+            title: "Premium Deals on",
+            subtitle: "Discover exceptional products with unbeatable prices. Quality guaranteed, satisfaction assured."
+        },
+        {
+            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200",
+            badge: "Fast Delivery",
+            title: "Lightning-Fast Shipping",
+            subtitle: "Get your orders delivered within 24–48 hours across major cities. Track every step in real time."
+        },
+        {
+            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200",
+            badge: "Customer First",
+            title: "Your Satisfaction, Our Priority",
+            subtitle: "Dedicated 24/7 support, easy returns, and a seamless shopping experience tailored just for you."
+        }
+    ];
+
+    // Carousel functions
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
+    };
+
+    const goToSlide = (index) => {
+        setCurrentSlide(index);
+    };
+
+    const toggleAutoPlay = () => {
+        setIsAutoPlaying(!isAutoPlaying);
     };
 
     const categories = [
@@ -54,108 +103,93 @@ const Home = () => {
             image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400',
             link: '/products?category=clothing',
             icon: '👕'
-        }
-    ];
-
-    const features = [
-        {
-            icon: '🚚',
-            title: 'Free Shipping',
-            description: 'Free delivery on orders over $50'
         },
         {
-            icon: '🔒',
-            title: 'Secure Payment',
-            description: '100% secure payment processing'
-        },
-        {
-            icon: '↩️',
-            title: 'Easy Returns',
-            description: '30-day return policy'
-        },
-        {
-            icon: '💝',
-            title: '24/7 Support',
-            description: 'Round-the-clock customer service'
+            name: 'Web Development',
+            description: 'create stunning websites',
+            image: 'https://imgs.search.brave.com/HjllFPYi3dREsUKMm9U5Lb8P3tUJZaSWxZqVMkrP1lk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3Ivd2ViLWRldmVs/b3BtZW50LWlzb21l/dHJpYy13ZWItY29u/Y2VwdC1wZW9wbGUt/Y3JlYXRlLW9wdGlt/aXplLXdlYi1wYWdl/LXdvcmstd2l0aC1j/b2RlXzkyMDktNzEw/MC5qcGc_c2VtdD1h/aXNfaHlicmlkJnc9/NzQwJnE9ODA',
+            link: '/products?category=webdev',
+            icon: '🌐'
         }
     ];
 
     return (
         <div className="homepage">
+            {/* === CUSTOM CAROUSEL SECTION === */}
             <section className="hero-section">
-                <div className="hero-background">
-                    <div className="hero-overlay"></div>
-                </div>
-                <div className="hero-content">
-                    <div className="hero-grid">
-                        {/* Left: Text */}
-                        <div className="hero-text">
-                            <div className="hero-badge">
-                                <span className="badge-text">Premium Quality</span>
-                            </div>
-                            <h1 className="hero-title">
-                                Premium Deals on
-                                <span className="brand">Good Deal</span>
-                            </h1>
-                            <p className="hero-subtitle">
-                                Discover exceptional products with unbeatable prices.
-                                Quality guaranteed, satisfaction assured.
-                            </p>
-                            <div className="hero-actions">
-                                <Link to="/products" className="btn btn-primary">
-                                    Shop Collection
-                                    <span className="btn-icon">→</span>
-                                </Link>
-                                <Link to="/deals" className="btn btn-secondary">
-                                    View Special Offers
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Right: Stats */}
-                        <div className="hero-stats">
-                            <div className="stat-item">
-                                <div className="stat-number">{stats.products}+</div>
-                                <div className="stat-label">Products</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">{stats.customers}+</div>
-                                <div className="stat-label">Happy Customers</div>
-                            </div>
-                            <div className="stat-item">
-                                <div className="stat-number">{stats.orders}+</div>
-                                <div className="stat-label">Orders Delivered</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section className="features-section">
-                <div className="container">
-                    <div className="section-header">
-                        <h2>Why Choose GoodDeal?</h2>
-                        <p>We provide the best shopping experience for our customers</p>
-                    </div>
-                    <div className="features-grid">
-                        {features.map((feature, index) => (
-                            <div key={index} className="feature-card">
-                                <div className="feature-icon">{feature.icon}</div>
-                                <h3>{feature.title}</h3>
-                                <p>{feature.description}</p>
+                <div className="custom-carousel">
+                    <div className="carousel-container">
+                        {heroSlides.map((slide, index) => (
+                            <div
+                                key={index}
+                                className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
+                            >
+                                <div
+                                    className="carousel-slide-bg"
+                                    style={{ backgroundImage: `url(${slide.image})` }}
+                                ></div>
+                                <div className="carousel-slide-overlay">
+                                    <div className="carousel-slide-content">
+                                        <div className="carousel-badge">
+                                            <span className="badge-text">{slide.badge}</span>
+                                        </div>
+                                        <h1 className="carousel-title">
+                                            {slide.title}
+                                            <span className="brand">Good Deal</span>
+                                        </h1>
+                                        <p className="carousel-subtitle">
+                                            {slide.subtitle}
+                                        </p>
+                                        <div className="carousel-actions">
+                                            <Link to="/products" className="btn btn-primary">
+                                                Shop Collection
+                                                <span className="btn-icon">→</span>
+                                            </Link>
+                                            <Link to="/deals" className="btn btn-secondary">
+                                                View Special Offers
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
+
+                    {/* Carousel Controls */}
+                    <button className="carousel-control prev" onClick={prevSlide}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                    <button className="carousel-control next" onClick={nextSlide}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+
+                    {/* Carousel Indicators */}
+                    <div className="carousel-indicators">
+                        {heroSlides.map((_, index) => (
+                            <button
+                                key={index}
+                                className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                                onClick={() => goToSlide(index)}
+                            ></button>
+                        ))}
+                    </div>
+
+                    {/* Auto Play Toggle */}
+                    <button className="carousel-autoplay" onClick={toggleAutoPlay}>
+                        {isAutoPlaying ? '⏸️' : '▶️'}
+                    </button>
                 </div>
             </section>
 
-            {/* Categories Section */}
             <section className="categories-section">
                 <div className="container">
                     <div className="section-header">
                         <h2>Product & Services</h2>
-                        <p>Explore our wide range of products</p>
+
                     </div>
                     <div className="categories-grid">
                         {categories.map((category, index) => (
@@ -176,7 +210,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Featured Products Section */}
             <section className="products-section">
                 <div className="container">
                     <div className="section-header">
@@ -227,31 +260,6 @@ const Home = () => {
                         <Link to="/products" className="btn-outline">
                             View All Products
                         </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Newsletter Section */}
-            <section className="newsletter-section">
-                <div className="container">
-                    <div className="newsletter-content">
-                        <div className="newsletter-text">
-                            <h2>Stay Updated</h2>
-                            <p>Subscribe to our newsletter for the latest deals and offers</p>
-                        </div>
-                        <div className="newsletter-form">
-                            <div className="input-group">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email address"
-                                    className="newsletter-input"
-                                />
-                                <button className="btn btn-primary">Subscribe</button>
-                            </div>
-                            <p className="newsletter-note">
-                                We respect your privacy. Unsubscribe at any time.
-                            </p>
-                        </div>
                     </div>
                 </div>
             </section>

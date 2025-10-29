@@ -22,6 +22,13 @@ import AdminRoute from './components/routing/AdminRoute';
 import { loadUser } from './actions/authActions';
 import AboutUs from './components/pages/AboutUs';
 import ContactUs from './components/pages/ContactUs';
+import FAQ from './components/pages/FAQ'
+import PrivacyPolicy from './components/pages/PrivacyPolicy';
+import ShippingInfo from './components/pages/ShippingInfo';
+import ReturnsPolicy from './components/pages/ReturnsPolicy';
+import TermsOfService from './components/pages/TermsOfService';
+import SupportPage from './components/pages/SupportPage';
+import ScrollToTop from './components/routing/ScrollToTop';
 
 // AppLayout Component
 const AppLayout = () => {
@@ -36,18 +43,20 @@ const AppLayout = () => {
             <main className="main-content">
                 <Routes>
                     <Route path="/" element={<Home />} />
-
-                    {/* ✅ 2. /products রুটটি ProductList কে দিন */}
                     <Route path="/products" element={<ProductList />} />
-
-                    {/* ✅ 3. /products/:id রুটটি Products কে দিন */}
                     <Route path="/products/:id" element={<Products />} />
-
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/about" element={<AboutUs />} />
                     <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/faq" element={<FAQ />} />
+
+                    <Route path="/shipping" element={<ShippingInfo />} />
+                    <Route path="/returns" element={<ReturnsPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="/support" element={<SupportPage />} />
+                    <Route path="/Privacy" element={<PrivacyPolicy />} />
 
                     {/* Admin Routes */}
                     <Route
@@ -86,6 +95,7 @@ const AppContent = () => {
 
     return (
         <Router>
+            <ScrollToTop />
             <AppLayout />
         </Router>
     );

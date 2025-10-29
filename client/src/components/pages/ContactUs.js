@@ -53,7 +53,7 @@ const ContactUs = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-icon">📞</span>
-                            <span>+880 1XXX-XXXXXX</span>
+                            <span>+880 1619302150</span>
                         </div>
                         <div className="info-item">
                             <span className="info-icon">📍</span>
