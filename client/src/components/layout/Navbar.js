@@ -1,14 +1,15 @@
-// client/src/components/layout/Navbar.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
+import Alert from './Alert'; 
 import './Navbar.css';
 
 const Navbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useSelector(state => state.auth);
+    const { itemCount } = useSelector(state => state.cart); // <-- === কার্ট কাউন্ট যোগ করা হয়েছে ===
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleLogout = () => {
@@ -25,6 +26,8 @@ const Navbar = () => {
         setIsMenuOpen(false);
     };
 
+    const isAdmin = isAuthenticated && user && user.role === 'admin';
+
     return (
         <nav className="navbar">
             <div className="nav-backdrop"></div>
@@ -36,7 +39,6 @@ const Navbar = () => {
                     </Link>
                 </div>
 
-                {/* Hamburger Menu Button */}
                 <button
                     className={`hamburger ${isMenuOpen ? 'active' : ''}`}
                     onClick={toggleMenu}
@@ -47,29 +49,36 @@ const Navbar = () => {
                     <span></span>
                 </button>
 
-                {/* Navigation Links */}
                 <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
                     <Link to="/" className="nav-link" onClick={closeMenu}>
                         <span className="nav-icon">🏠</span>
                         <span className="nav-text">Home</span>
                     </Link>
-                    <Link to="/products" className="nav-link" onClick={closeMenu}>
-                        <span className="nav-icon">📦</span>
-                        <span className="nav-text">Products</span>
-                    </Link>
+
+                    {!isAdmin && (
+                        <Link to="/products" className="nav-link" onClick={closeMenu}>
+                            <span className="nav-icon">📦</span>
+                            <span className="nav-text">Products</span>
+                        </Link>
+                    )}
 
                     {isAuthenticated ? (
                         <>
-                            {user && user.role === 'admin' && (
+                            {isAdmin && (
                                 <Link to="/admin" className="nav-link admin-link" onClick={closeMenu}>
                                     <span className="nav-icon">🛠️</span>
                                     <span className="nav-text">Admin Dashboard</span>
                                 </Link>
                             )}
-                            <Link to="/cart" className="nav-link" onClick={closeMenu}>
+                            {/* === পরিবর্তন: কার্ট লিংক ও ব্যাজ === */}
+                            <Link to="/cart" className="nav-link nav-cart-link" onClick={closeMenu}>
                                 <span className="nav-icon">🛒</span>
                                 <span className="nav-text">Cart</span>
+                                {itemCount > 0 && (
+                                    <span className="cart-badge">{itemCount}</span>
+                                )}
                             </Link>
+                            {/* ================================== */}
                             <div className="user-section">
                                 <div className="user-avatar">👤</div>
                                 <div className="user-info">
@@ -84,6 +93,15 @@ const Navbar = () => {
                         </>
                     ) : (
                         <>
+                            {/* === পরিবর্তন: কার্ট লিংক ও ব্যাজ (লগআউট অবস্থা) === */}
+                            <Link to="/cart" className="nav-link nav-cart-link" onClick={closeMenu}>
+                                <span className="nav-icon">🛒</span>
+                                <span className="nav-text">Cart</span>
+                                {itemCount > 0 && (
+                                    <span className="cart-badge">{itemCount}</span>
+                                )}
+                            </Link>
+                            {/* ================================== */}
                             <Link to="/login" className="nav-link login-link" onClick={closeMenu}>
                                 <span className="nav-icon">🔐</span>
                                 <span className="nav-text">Login</span>
@@ -95,12 +113,13 @@ const Navbar = () => {
                         </>
                     )}
                 </div>
-
-                {/* Overlay for mobile */}
-                {isMenuOpen && (
-                    <div className="nav-overlay" onClick={closeMenu}></div>
-                )}
             </div>
+
+            <Alert />
+
+            {isMenuOpen && (
+                <div className="nav-overlay" onClick={closeMenu}></div>
+            )}
         </nav>
     );
 };

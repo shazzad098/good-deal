@@ -8,7 +8,6 @@ import './App.css';
 // Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import Alert from './components/layout/Alert';
 import Home from './components/pages/Home';
 import Products from './components/products/Products';
 import ProductList from './components/products/ProductList';
@@ -39,7 +38,8 @@ const AppLayout = () => {
         <div className="App">
             {!isAdminRoute && <Navbar />}
 
-            <Alert />
+            {/* Alert কম্পোনেন্টটি Navbar.js এর ভেতরে সরানো হয়েছে */}
+            
             <main className="main-content">
                 <Routes>
                     <Route path="/" element={<Home />} />

@@ -4,17 +4,26 @@ import axios from 'axios';
 // Set API base URL
 axios.defaults.baseURL = 'http://localhost:5000';
 
-// Set Alert
-export const setAlert = (msg, type) => ({
-    type: 'SET_ALERT',
-    payload: { msg, type, id: Date.now() }
-});
-
-// Remove Alert
+// Remove Alert (এটি অপরিবর্তিত)
 export const removeAlert = (id) => ({
     type: 'REMOVE_ALERT',
     payload: id
 });
+
+// === পরিবর্তন এখানে ===
+// Set Alert (এখন এটি একটি থাঙ্ক এবং নিজে থেকেই রিমুভ হয়)
+export const setAlert = (msg, type, timeout = 1500) => (dispatch) => {
+    const id = Date.now();
+    dispatch({
+        type: 'SET_ALERT',
+        payload: { msg, type, id }
+    });
+
+    // নির্দিষ্ট সময় পর অটো রিমুভ
+    setTimeout(() => {
+        dispatch(removeAlert(id));
+    }, timeout);
+};
 
 // Register User
 export const registerUser = (userData) => async (dispatch) => {
@@ -34,12 +43,9 @@ export const registerUser = (userData) => async (dispatch) => {
             payload: res.data
         });
 
-        dispatch(setAlert('Registration successful!', 'success'));
-
-        // Auto remove alert after 3 seconds
-        setTimeout(() => {
-            dispatch(removeAlert(Date.now()));
-        }, 3000);
+        // === পরিবর্তন: সংক্ষিপ্ত মেসেজ ও নতুন setAlert ব্যবহার ===
+        dispatch(setAlert('Registered!', 'success'));
+        // পুরানো setTimeout ব্লকটি রিমুভ করা হয়েছে
 
     } catch (error) {
         const message = error.response?.data?.message || 'Registration failed';
@@ -49,15 +55,12 @@ export const registerUser = (userData) => async (dispatch) => {
             payload: message
         });
 
+        // === পরিবর্তন: নতুন setAlert ব্যবহার ===
         dispatch(setAlert(message, 'error'));
-
-        setTimeout(() => {
-            dispatch(removeAlert(Date.now()));
-        }, 3000);
+        // পুরানো setTimeout ব্লকটি রিমুভ করা হয়েছে
     }
 };
 
-// Login User
 // Login User
 export const loginUser = (email, password) => async (dispatch) => {
     try {
@@ -76,11 +79,9 @@ export const loginUser = (email, password) => async (dispatch) => {
             payload: res.data
         });
 
-        dispatch(setAlert('Login successful!', 'success'));
-
-        setTimeout(() => {
-            dispatch(removeAlert(Date.now()));
-        }, 3000);
+        // === পরিবর্তন: সংক্ষিপ্ত মেসেজ "Logged in!" ও নতুন setAlert ===
+        dispatch(setAlert('Logged in!', 'success'));
+        // পুরানো setTimeout ব্লকটি রিমুভ করা হয়েছে
 
     } catch (error) {
         console.error('Login error:', error);
@@ -104,18 +105,17 @@ export const loginUser = (email, password) => async (dispatch) => {
             payload: message
         });
 
+        // === পরিবর্তন: নতুন setAlert ব্যবহার ===
         dispatch(setAlert(message, 'error'));
-
-        setTimeout(() => {
-            dispatch(removeAlert(Date.now()));
-        }, 3000);
+        // পুরানো setTimeout ব্লকটি রিমুভ করা হয়েছে
     }
 };
 
 // Logout User
 export const logoutUser = () => (dispatch) => {
     dispatch({ type: 'LOGOUT' });
-    dispatch(setAlert('Logged out successfully', 'success'));
+    // === পরিবর্তন: সংক্ষিপ্ত মেসেজ "Logged out!" ও নতুন setAlert ===
+    dispatch(setAlert('Logged out!', 'success'));
 };
 
 // Load User

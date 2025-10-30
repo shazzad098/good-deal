@@ -1,19 +1,24 @@
 /* client/src/components/layout/Alert.css */
 .global-alert-container {
-    position: fixed;
-    top: 80px; /* Navbar er niche (Navbar height 70px + 10px gap) */
+    position: absolute; /* === পরিবর্তন: fixed থেকে absolute === */
+    top: 80px; /* Navbar er height (80px) er thik niche */
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
     max-width: 600px;
-    z-index: 2000;
+    z-index: 999; /* Navbar (1000) er niche */
     display: flex;
     flex-direction: column;
     gap: 10px;
+    /* পয়েন্টার ইভেন্ট বন্ধ করা যাতে এটি নীচের কন্টেন্টে ক্লিক করতে বাধা না দেয় 
+       যখন এটি খালি থাকে (যদিও এটি null রেন্ডার করে) */
+    pointer-events: none;
 }
 
 /* Admin page e navbar alada, tai top adjust kora */
 .admin-layout .global-alert-container {
+    /* এই রুলটি এখন আর প্রয়োজন নাও হতে পারে যদি অ্যাডমিন লেআউট আলাদা ন্যাভবার ব্যবহার করে,
+       তবে এটি রাখা নিরাপদ। */
     top: 74px; /* Admin header height 64px + 10px gap */
 }
 
@@ -25,6 +30,7 @@
     border-left: 4px solid transparent;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.3s ease;
+    pointer-events: auto; /* অ্যালার্টে ক্লিক করা যাবে (যদি প্রয়োজন হয়) */
 }
 
 .global-alert.alert-success {

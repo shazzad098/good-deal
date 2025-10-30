@@ -1,0 +1,188 @@
+/* client/src/components/order/Checkout.css */
+:root {
+    /* থিম কালার (কার্ট পেজের সবুজ) */
+    --primary-color: #059669; /* emerald-600 */
+    --primary-dark: #047857;  /* emerald-700 */
+    --primary-light: #ECFDF5; /* emerald-50 */
+    --primary-border: #A7F3D0; /* emerald-200 */
+
+    /* গ্রেস্কেল */
+    --text-primary: #111827;   /* gray-900 */
+    --text-secondary: #4B5563; /* gray-600 */
+    --text-muted: #9CA3AF;     /* gray-400 */
+    --bg-page: #f9fafb;    /* gray-50 */
+    --bg-card: #ffffff;
+    --border-light: #e5e7eb; /* gray-200 */
+    --border-medium: #d1d5db; /* gray-300 */
+    --radius-lg: 0.75rem;  /* 12px */
+    --radius-md: 0.5rem;   /* 8px */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.checkout-page {
+    background: var(--bg-page);
+    min-height: 80vh;
+    padding: 3rem 0;
+}
+
+.checkout-page .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Forms (Left Column) */
+.checkout-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.checkout-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.checkout-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.payment-demo-note {
+    background: var(--primary-light);
+    border: 1px solid var(--primary-border);
+    color: var(--primary-dark);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* Summary (Right Column) */
+.checkout-summary .summary-card {
+    position: sticky;
+    top: 100px; /* Navbar height + gap */
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+}
+.btn-primary:disabled {
+    background: #A7F3D0; /* Lighter green */
+    cursor: not-allowed;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+    .checkout-summary .summary-card {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .checkout-card {
+        padding: 1.5rem;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
