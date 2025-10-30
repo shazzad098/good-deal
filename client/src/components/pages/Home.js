@@ -4,6 +4,7 @@ import axios from 'axios';
 import './Home.css';
 
 const Home = () => {
+    // ... (baki state-gulo oporibortito) ...
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
@@ -11,16 +12,14 @@ const Home = () => {
         customers: 0,
         orders: 0
     });
-
-    // Carousel state
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
     useEffect(() => {
+        // ... (baki useEffect oporibortito) ...
         fetchFeaturedProducts();
         fetchStats();
 
-        // Auto play carousel
         let interval;
         if (isAutoPlaying) {
             interval = setInterval(() => {
@@ -32,6 +31,7 @@ const Home = () => {
     }, [currentSlide, isAutoPlaying]);
 
     const fetchFeaturedProducts = async () => {
+        // ... (function oporibortito) ...
         try {
             const res = await axios.get('/api/products?limit=4');
             setFeaturedProducts(res.data.products || []);
@@ -43,6 +43,7 @@ const Home = () => {
     };
 
     const fetchStats = async () => {
+        // ... (function oporibortito) ...
         setStats({
             products: 1250,
             customers: 8500,
@@ -50,7 +51,7 @@ const Home = () => {
         });
     };
 
-    // Hero slides with background images + content
+    // ... (heroSlides ebong carousel functions oporibortito) ...
     const heroSlides = [
         {
             image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200",
@@ -71,24 +72,21 @@ const Home = () => {
             subtitle: "Dedicated 24/7 support, easy returns, and a seamless shopping experience tailored just for you."
         }
     ];
-
-    // Carousel functions
     const nextSlide = () => {
         setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
     };
-
     const prevSlide = () => {
         setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
     };
-
     const goToSlide = (index) => {
         setCurrentSlide(index);
     };
-
     const toggleAutoPlay = () => {
         setIsAutoPlaying(!isAutoPlaying);
     };
 
+
+    // === PORIBORTON EKHANE ===
     const categories = [
         {
             name: 'Electronics',
@@ -108,15 +106,17 @@ const Home = () => {
             name: 'Web Development',
             description: 'create stunning websites',
             image: 'https://imgs.search.brave.com/HjllFPYi3dREsUKMm9U5Lb8P3tUJZaSWxZqVMkrP1lk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3Ivd2ViLWRldmVs/b3BtZW50LWlzb21l/dHJpYy13ZWItY29u/Y2VwdC1wZW9wbGUt/Y3JlYXRlLW9wdGlt/aXplLXdlYi1wYWdl/LXdvcmstd2l0aC1j/b2RlXzkyMDktNzEw/MC5qcGc_c2VtdD1h/aXNfaHlicmlkJnc9/NzQwJnE9ODA',
-            link: '/products?category=webdev',
+            link: '/services/web-development', // <-- LINK PORIBORTON KORA HOYECHE
             icon: '🌐'
         }
     ];
+    // ===========================
 
     return (
         <div className="homepage">
             {/* === CUSTOM CAROUSEL SECTION === */}
             <section className="hero-section">
+                {/* ... (carousel content oporibortito) ... */}
                 <div className="custom-carousel">
                     <div className="carousel-container">
                         {heroSlides.map((slide, index) => (
@@ -186,6 +186,7 @@ const Home = () => {
             </section>
 
             <section className="categories-section">
+                {/* ... (category section oporibortito) ... */}
                 <div className="container">
                     <div className="section-header">
                         <h2>Product & Services</h2>
@@ -211,6 +212,7 @@ const Home = () => {
             </section>
 
             <section className="products-section">
+                {/* ... (featured products section oporibortito) ... */}
                 <div className="container">
                     <div className="section-header">
                         <h2>Featured Products</h2>

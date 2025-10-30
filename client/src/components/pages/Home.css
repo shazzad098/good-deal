@@ -892,6 +892,7 @@ body::before {
     .carousel-control {
         width: 40px;
         height: 40px;
+        display: none; /* === পরিবর্তন: বাটন হাইড করা হলো === */
     }
 
     .carousel-control.prev {

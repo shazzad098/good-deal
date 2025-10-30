@@ -4,7 +4,10 @@
     padding: 60px 0;
     min-height: calc(100vh - 140px); /* Adjust based on navbar/footer height */
 }
-
+.container{
+    display: flex;
+    flex-direction: column;
+}
 .contact-header {
     text-align: center;
     margin-bottom: 50px;

@@ -8,6 +8,7 @@ import './App.css';
 // Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+// Alert.js ekhon Navbar.js er moddhe ache
 import Home from './components/pages/Home';
 import Products from './components/products/Products';
 import ProductList from './components/products/ProductList';
@@ -28,6 +29,7 @@ import ReturnsPolicy from './components/pages/ReturnsPolicy';
 import TermsOfService from './components/pages/TermsOfService';
 import SupportPage from './components/pages/SupportPage';
 import ScrollToTop from './components/routing/ScrollToTop';
+import WebDevService from './components/pages/WebDevService'; // === NOTUN IMPORT ===
 
 // AppLayout Component
 const AppLayout = () => {
@@ -37,8 +39,6 @@ const AppLayout = () => {
     return (
         <div className="App">
             {!isAdminRoute && <Navbar />}
-
-            {/* Alert কম্পোনেন্টটি Navbar.js এর ভেতরে সরানো হয়েছে */}
             
             <main className="main-content">
                 <Routes>
@@ -57,6 +57,9 @@ const AppLayout = () => {
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="/support" element={<SupportPage />} />
                     <Route path="/Privacy" element={<PrivacyPolicy />} />
+
+                    {/* === NOTUN ROUTE === */}
+                    <Route path="/services/web-development" element={<WebDevService />} />
 
                     {/* Admin Routes */}
                     <Route

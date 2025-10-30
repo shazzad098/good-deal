@@ -1,0 +1,108 @@
+/* client/src/components/pages/WebDevService.css */
+.web-dev-page {
+    background-color: #f8fafc;
+    padding: 60px 0;
+    min-height: calc(100vh - 140px); /* Navbar/footer height er jonno adjust */
+}
+
+.web-dev-content {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.web-dev-title {
+    color: #1e293b;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.web-dev-intro {
+    font-size: 1.1rem;
+    color: #475569;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.7;
+}
+
+.section-title {
+    color: #334155;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.web-dev-content p {
+    color: #64748b;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.web-dev-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.web-dev-content li {
+    color: #64748b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.7;
+}
+
+.bullet-icon {
+    font-size: 1rem;
+    margin-top: 4px; /* Align icon better with text */
+}
+
+.web-dev-content strong {
+    color: #334155;
+}
+
+.cta-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: #1e293b; /* Primary button style */
+    color: white;
+}
+
+.cta-button:hover {
+    background: #0f172a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 41, 59, 0.3);
+}
+
+@media (max-width: 768px) {
+    .web-dev-content {
+        padding: 30px;
+    }
+    .web-dev-title {
+        font-size: 2rem;
+    }
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
