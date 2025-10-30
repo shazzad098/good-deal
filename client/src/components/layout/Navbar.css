@@ -1,27 +1,15 @@
 /* client/src/components/layout/Navbar.css */
+
+/* === Base Navbar Styles === */
 .navbar {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 30, 30, 0.65); /* Slightly darker for better contrast */
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     padding: 0;
-}
-
-.nav-backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(30, 30, 30, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    z-index: -1;
 }
 
 .nav-container {
@@ -35,6 +23,7 @@
     position: relative;
 }
 
+/* === Brand/Logo Styles === */
 .nav-brand a {
     color: white;
     text-decoration: none;
@@ -60,9 +49,9 @@
     background-clip: text;
 }
 
-/* Hamburger Menu Styles */
+/* === Hamburger Menu (Mobile Only) === */
 .hamburger {
-    display: none;
+    display: none; /* Hidden on desktop */
     flex-direction: column;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -70,7 +59,7 @@
     border-radius: 8px;
     cursor: pointer;
     padding: 8px;
-    z-index: 1001;
+    z-index: 1001; /* Must be above nav-links in mobile view */
     transition: all 0.3s ease;
 }
 
@@ -89,6 +78,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Hamburger active state (cross icon) */
 .hamburger.active {
     background: rgba(255, 255, 255, 0.2);
 }
@@ -105,19 +95,19 @@
     transform: rotate(45deg) translate(-5px, -6px);
 }
 
-/* Navigation Links */
+/* === Navigation Links (Desktop) === */
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px; /* সামান্য বেশি স্পেসিং পড়ার সুবিধার্থে */
+    gap: 20px;
     transition: all 0.3s ease;
 }
 
 .nav-link {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    padding: 8px 16px; /* padding কমানো হয়েছে */
-    border-radius: 8px; /* কম রাউন্ডিং */
+    padding: 8px 16px;
+    border-radius: 8px;
     transition: all 0.25s ease;
     font-weight: 500;
     font-size: 15px;
@@ -125,7 +115,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    /* গ্লাসি ইফেক্ট সম্পূর্ণ রিমুভ — শুধু সিম্পল হোভার */
     background: transparent;
     border: none;
     text-shadow: none;
@@ -133,10 +122,7 @@
 
 .nav-link:hover {
     color: white;
-    background: rgba(255, 255, 255, 0.1); /* সাবল হোভার হাইলাইট */
-    transform: none; /* যান্ত্রিক এনিমেশন বন্ধ */
-    box-shadow: none;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-icon {
@@ -144,7 +130,7 @@
     opacity: 0.9;
 }
 
-/* Special links: এখন শুধু টেক্সট কালার দিয়ে আইডেন্টিফাই, ব্যাকগ্রাউন্ড নয় */
+/* Special links styling */
 .admin-link,
 .login-link,
 .register-link {
@@ -153,74 +139,33 @@
     font-weight: 600;
 }
 
-.admin-link {
-    color: #FFA726; /* সাবল অরেঞ্জ — ওয়ার্নিং/অ্যাডমিন ইন্ডিকেটর */
-}
+.admin-link { color: #FFA726; }
+.admin-link:hover { color: #FF9800; background: rgba(255, 167, 38, 0.1); }
 
-.admin-link:hover {
-    color: #FF9800;
-    background: rgba(255, 167, 38, 0.1);
-}
+.login-link { color: #4CAF50; }
+.login-link:hover { color: #43A047; background: rgba(76, 175, 80, 0.1); }
 
-.login-link {
-    color: #4CAF50; /* সাবল গ্রিন — পজিটিভ অ্যাকশন */
-}
+.register-link { color: #607D8B; }
+.register-link:hover { color: #546E7A; background: rgba(96, 125, 139, 0.1); }
 
-.login-link:hover {
-    color: #43A047;
-    background: rgba(76, 175, 80, 0.1);
-}
-
-.register-link {
-    color: #607D8B; /* নিউট্রাল গ্রে-ব্লু (বেগুনি/নীল নয়!) */
-}
-
-.register-link:hover {
-    color: #546E7A;
-    background: rgba(96, 125, 139, 0.1);
-    border: 1px solid rgba(33, 150, 243, 0.3);
-}
-
-/* User Section */
+/* === User Section === */
 .user-section {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 10px 16px;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.user-avatar {
-    font-size: 20px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-greeting {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.user-name {
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-}
+.user-avatar { font-size: 20px; }
+.user-info { display: flex; flex-direction: column; }
+.user-greeting { color: rgba(255, 255, 255, 0.8); font-size: 12px; }
+.user-name { color: white; font-size: 14px; font-weight: 600; }
 
 .logout-btn {
-    background: linear-gradient(
-            135deg,
-            rgba(231, 76, 60, 0.2) 0%,
-            rgba(192, 57, 43, 0.2) 100%
-    );
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.2));
     color: white;
     border: 1px solid rgba(231, 76, 60, 0.3);
     padding: 12px 20px;
@@ -229,32 +174,23 @@
     font-weight: 500;
     transition: all 0.3s ease;
     font-size: 15px;
-    white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 8px;
-    backdrop-filter: blur(10px);
 }
 
 .logout-btn:hover {
-    background: linear-gradient(
-            135deg,
-            rgba(231, 76, 60, 0.3) 0%,
-            rgba(192, 57, 43, 0.3) 100%
-    );
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.3));
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
     border-color: rgba(231, 76, 60, 0.5);
 }
 
-.logout-icon {
-    font-size: 16px;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
+.logout-icon { font-size: 16px; }
 
-/* Mobile Overlay */
+/* === Mobile Overlay === */
 .nav-overlay {
-    display: none;
+    display: none; /* Hidden by default */
     position: fixed;
     top: 0;
     left: 0;
@@ -262,11 +198,26 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    z-index: 998;
+    z-index: 999; /* Below the nav-links, above page content */
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
-/* Mobile Responsive */
+.nav-overlay.active {
+    display: block; /* Made visible with JS */
+    opacity: 1;
+}
+
+/* === Mobile Responsive Styles (max-width: 768px) === */
+/* Mobile Responsive - Solid Background */
 @media (max-width: 768px) {
+    .navbar {
+        background: #1e1e1e; /* <== পরিবর্তন: সলিড ডার্ক ব্যাকগ্রাউন্ড */
+        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
+        -webkit-backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
+        border-bottom: 1px solid #333; /* <== পরিবর্তন: সলিড বর্ডার */
+    }
+
     .nav-container {
         padding: 0 20px;
         height: 70px;
@@ -282,18 +233,26 @@
 
     .hamburger {
         display: flex;
+        background: #333; /* <== পরিবর্তন: সলিড বাটন ব্যাকগ্রাউন্ড */
+        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
+        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
+    }
+
+    .hamburger:hover,
+    .hamburger.active {
+        background: #444; /* <== পরিবর্তন: সলিড হোভার/অ্যাক্টিভ ব্যাকগ্রাউন্ড */
     }
 
     .nav-links {
         position: fixed;
         top: 0;
-        right: -100%;
+        right: -320px; 
         width: 320px;
         height: 100vh;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(30px) saturate(180%);
-        -webkit-backdrop-filter: blur(30px) saturate(180%);
-        border-left: 1px solid rgba(255, 255, 255, 0.2);
+        background: #1e1e1e; /* <== পরিবর্তন: সলিড ডার্ক ব্যাকগ্রাউন্ড */
+        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
+        -webkit-backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
+        border-left: 1px solid #333; /* <== পরিবর্তন: সলিড বর্ডার */
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
@@ -312,20 +271,21 @@
         width: 100%;
         border-radius: 12px;
         font-size: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
+        background: #2f2f2f; /* <== পরিবর্তন: সলিড লিংক ব্যাকগ্রাউন্ড */
     }
 
     .nav-link:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.25);
+        background: #444; /* <== পরিবর্তন: সলিড হোভার ব্যাকগ্রাউন্ড */
+        border-color: #555; /* <== পরিবর্তন: সলিড হোভার বর্ডার */
         transform: translateX(5px);
     }
 
     .user-section {
         width: 100%;
         margin: 10px 0;
-        background: rgba(255, 255, 255, 0.08);
+        background: #2f2f2f; /* <== পরিবর্তন: সলিড ব্যাকগ্রাউন্ড */
+        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
     }
 
     .logout-btn {
@@ -334,39 +294,15 @@
         font-size: 16px;
         margin-top: 10px;
         justify-content: center;
+        /* লগআউট বাটন আগের মতোই রেড-টিন্ট থাকবে */
     }
 
-    .nav-overlay {
-        display: block;
-    }
-}
-
-@media (max-width: 480px) {
-    .nav-container {
-        padding: 0 15px;
+    .nav-overlay { 
+        display: none; 
+        /* ওভারলে ব্লার ঠিক আছে, কারণ এটি মেনুর পেছনে থাকে */
     }
 
-    .nav-brand a {
-        font-size: 22px;
-    }
-
-    .brand-icon {
-        font-size: 24px;
-    }
-
-    .nav-links {
-        width: 100%;
-        padding: 80px 20px 20px;
-    }
-}
-
-/* Enhanced glass effect for modern browsers */
-@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
-    .navbar {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .nav-links {
-        background: rgba(255, 255, 255, 0.05);
+    .nav-overlay.active {
+        display: block; 
     }
 }

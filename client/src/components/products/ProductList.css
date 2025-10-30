@@ -1,35 +1,49 @@
 /* ============================================================================
-   PRODUCT LIST PAGE - Modern Minimalist Design 2025
-   ============================================================================ */
+    PRODUCT LIST PAGE - Professional Refactor (Pine Green Theme)
+    ============================================================================ */
 
+/* _0_Setup_and_Color_Palette_ */
 :root {
-    --primary-color: #0066ff;
-    --primary-dark: #0052cc;
-    --text-primary: #0f1419;
-    --text-secondary: #5f6c7b;
-    --text-muted: #9ca3af;
-    --bg-page: #fafbfc;
+    /* Primary Colors (Pine Green) */
+    --primary-color: #059669; /* emerald-600 */
+    --primary-dark: #047857;  /* emerald-700 */
+    --primary-light: #ECFDF5; /* emerald-50 */
+    --primary-border: #A7F3D0; /* emerald-200 */
+
+    /* Text Colors (Modern Grays) */
+    --text-primary: #111827;   /* gray-900 */
+    --text-secondary: #4B5563; /* gray-600 */
+    --text-muted: #9CA3AF;     /* gray-400 */
+
+    /* Backgrounds */
+    --bg-page: #f9fafb;    /* gray-50 */
     --bg-card: #ffffff;
-    --bg-surface: #f7f8fa;
-    --border-light: rgba(0, 0, 0, 0.06);
-    --border-medium: rgba(0, 0, 0, 0.1);
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-    --radius-sm: 0.5rem;
-    --radius-md: 0.75rem;
-    --radius-lg: 1rem;
-    --transition: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    --bg-surface: #f3f4f6; /* gray-100 */
+
+    /* Borders & Shadows (Subtle) */
+    --border-light: #e5e7eb; /* gray-200 */
+    --border-medium: #d1d5db; /* gray-300 */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    
+    /* Radius */
+    --radius-sm: 0.375rem; /* 6px */
+    --radius-md: 0.5rem;   /* 8px */
+    --radius-lg: 0.75rem;  /* 12px */
+    
+    /* Transition */
+    --transition: all 200ms ease-in-out;
 }
 
 /* ============================================================================
-   Base Layout
+   _1_Base_Layout_
    ============================================================================ */
 
 .products-page {
     min-height: 100vh;
     background: var(--bg-page);
-    padding: 2rem 0 4rem;
+    padding: 2.5rem 0 4rem; /* Top padding বাড়ানো হয়েছে */
 }
 
 .products-page .container {
@@ -38,14 +52,33 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 1.5rem;
+    gap: 2.5rem; /* সেকশনগুলোর মধ্যে গ্যাপ */
 }
 
 /* ============================================================================
-   Page Header
+   NEW: Main Content Layout (Sidebar + Grid)
+   ============================================================================ */
+
+.products-content-wrapper {
+    display: grid;
+    /* লেআউট পরিবর্তন: 280px সাইডবার + বাকিটা প্রোডাক্ট গ্রিড */
+    grid-template-columns: 280px 1fr;
+    gap: 2.5rem;
+    align-items: flex-start;
+}
+
+.products-main-area {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ============================================================================
+   _2_Component_ProductListHeader_
    ============================================================================ */
 
 .page-header {
-    margin-bottom: 3rem;
+    /* মার্জিন/প্যাডিং কন্টেইনারে সরানো হয়েছে */
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--border-light);
 }
@@ -62,7 +95,7 @@
 }
 
 .page-header h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(2rem, 4vw, 2.5rem); /* সামান্য ছোট */
     font-weight: 800;
     color: var(--text-primary);
     margin-bottom: 0.5rem;
@@ -71,35 +104,31 @@
 }
 
 .page-header p {
-    font-size: 1.0625rem;
+    font-size: 1.125rem; /* সামান্য বড় */
     color: var(--text-secondary);
     margin: 0;
     line-height: 1.6;
 }
 
-/* Header Stats */
+/* Header Stats (ডিজাইন পরিবর্তন: কার্ড থেকে সিম্পল টেক্সট) */
 .header-stats {
     display: flex;
     gap: 2rem;
-    background: var(--bg-card);
-    padding: 1.25rem 2rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-sm);
+    /* কার্ড স্টাইল রিমুভ করা হয়েছে */
 }
 
 .stat-item {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    text-align: center;
+    text-align: left; /* অ্যালাইনমেন্ট পরিবর্তন */
     min-width: 4rem;
 }
 
 .stat-number {
     font-size: 1.75rem;
     font-weight: 800;
-    color: var(--primary-color);
+    color: var(--primary-color); /* নতুন কালার */
     line-height: 1;
     letter-spacing: -0.02em;
 }
@@ -115,7 +144,7 @@
 .mobile-stats {
     display: none;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     padding: 0.75rem 1.25rem;
     background: var(--bg-surface);
     border-radius: var(--radius-md);
@@ -125,102 +154,123 @@
 }
 
 /* ============================================================================
-   Admin Panel
+   _3_Component_AdminPanel_FAB_
    ============================================================================ */
 
+/* ডিজাইন পরিবর্তন: Gradient থেকে Subtle Solid Color */
 .admin-panel {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-border);
     border-radius: var(--radius-lg);
     padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
 }
 
 .admin-panel::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
+    /* ডেকোরেশন রিমুভ করা হলো */
+    display: none;
 }
 
 .admin-panel h3 {
     font-size: 1.5rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    position: relative;
-    z-index: 1;
 }
 
 .admin-panel p {
     margin-bottom: 1.5rem;
-    opacity: 0.95;
+    opacity: 0.9;
     font-size: 1rem;
-    position: relative;
-    z-index: 1;
 }
 
 .btn-admin {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.875rem 1.75rem;
-    background: rgba(255, 255, 255, 0.95);
-    color: #667eea;
+    padding: 0.75rem 1.5rem; /* প্যাডিং অ্যাডজাস্ট */
+    background: var(--primary-color); /* নতুন কালার */
+    color: #ffffff;
     border-radius: var(--radius-md);
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 600; /* ফন্ট পরিবর্তন */
     font-size: 0.9375rem;
-    transition: all var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 1;
-}
-
-.btn-admin:hover {
-    background: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* ============================================================================
-   Filters Section
-   ============================================================================ */
-
-.filters-section {
-    display: flex;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: 1.75rem;
-    margin-bottom: 2.5rem;
-    border: 1px solid var(--border-light);
+    transition: var(--transition);
     box-shadow: var(--shadow-sm);
 }
 
-/* Search Box */
+.btn-admin:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.floating-action-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary-color); /* নতুন কালার */
+    color: #ffffff;
+    padding: 1rem 1.75rem;
+    border-radius: 3rem;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    box-shadow: var(--shadow-lg); /* শ্যাডো বাড়ানো হয়েছে */
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.floating-action-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 32px rgba(4, 120, 87, 0.4); /* শ্যাডো কালার পরিবর্তন */
+}
+
+.floating-action-btn span:first-child {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+/* ============================================================================
+   _4_Component_ProductFilters_Sidebar_
+   ============================================================================ */
+
+/* লেআউট পরিবর্তন: এটি এখন সাইডবার */
+.filters-section {
+    position: sticky;
+    top: 2rem; /* Navbar এর নিচ থেকে 2rem গ্যাপ */
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem; /* ফিল্টার গ্রুপগুলোর মধ্যে গ্যাপ */
+    
+    /* সাইডবারের উচ্চতা এবং স্ক্রোল */
+    height: calc(100vh - 4.5rem); /* Navbar/padding বাদ দিয়ে */
+    overflow-y: auto;
+    padding-right: 1rem; /* স্ক্রোলবারের জন্য প্যাডিং */
+}
+
+/* Search Box (ডিজাইন পরিবর্তন) */
 .search-box {
-    border: 2px solid #1f293b;
-    border-radius: var(--radius-lg);
     position: relative;
-    margin-bottom: 1.5rem;
+    /* Wrapper border রিমুভ */
 }
 
 .search-box input {
     width: 100%;
-    padding: 1rem 3rem 1rem 1.25rem;
-    border: 2px solid var(--border-light);
+    padding: 0.875rem 2.75rem 0.875rem 1rem; /* প্যাডিং অ্যাডজাস্ট */
+    border: 1px solid var(--border-medium); /* বর্ডার পরিবর্তন */
     border-radius: var(--radius-md);
-    font-size: 1rem;
+    font-size: 0.9375rem; /* ফন্ট সাইজ পরিবর্তন */
     font-family: inherit;
     color: var(--text-primary);
-    background: var(--bg-page);
-    transition: all 300ms ease;
+    background: var(--bg-card); /* ব্যাকগ্রাউন্ড পরিবর্তন */
+    transition: var(--transition);
 }
 
 .search-box input::placeholder {
@@ -231,12 +281,13 @@
     outline: none;
     border-color: var(--primary-color);
     background: var(--bg-card);
-    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+    /* মডার্ন ফোকাস রিং */
+    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-.search-box button {
+.clear-search-btn {
     position: absolute;
-    right: 1rem;
+    right: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -245,33 +296,33 @@
     color: var(--text-muted);
     cursor: pointer;
     padding: 0.5rem;
-    transition: all 300ms ease;
+    transition: var(--transition);
     border-radius: 0.375rem;
 }
 
-.search-box button:hover {
+.clear-search-btn:hover {
     color: var(--text-primary);
     background: var(--bg-surface);
 }
 
-/* Filter Controls */
+/* Filter Controls (লেআউট পরিবর্তন) */
 .filter-controls {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1.5rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    align-items: stretch;
 }
 
 .filter-group {
     display: flex;
-    /*flex-direction: column;*/
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1rem; /* গ্যাপ বাড়ানো হয়েছে */
 }
 
 .filter-group label {
-    font-size: 0.8125rem;
+    font-size: 0.875rem; /* ফন্ট সাইজ বাড়ানো হয়েছে */
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--text-primary); /* কালার পরিবর্তন */
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -282,90 +333,103 @@
     gap: 0.625rem;
 }
 
-.category-filters button {
+/* Category Button (ডিজাইন পরিবর্তন) */
+.category-btn {
     padding: 0.625rem 1.25rem;
     background: var(--bg-surface);
-    border: 2px solid transparent;
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
     font-size: 0.9375rem;
-    font-weight: 600;
+    font-weight: 500; /* ফন্ট পরিবর্তন */
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all var(--transition);
+    transition: var(--transition);
     text-transform: capitalize;
 }
 
-.category-filters button:hover {
+.category-btn:hover {
     background: var(--bg-card);
     border-color: var(--border-medium);
     color: var(--text-primary);
 }
 
-.category-filters button.active {
-    background: var(--primary-color);
-    color: #ffffff;
+.category-btn.active {
+    background: var(--primary-light);
+    color: var(--primary-dark);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+    font-weight: 600;
+    box-shadow: none; /* শ্যাডো রিমুভ */
 }
 
-/* Sort Group */
+/* Sort Group (ডিজাইন পরিবর্তন) */
 .sort-group {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    flex-direction: column; /* কলাম লেআউট */
+    align-items: stretch; /* পুরো প্রস্থ */
+    gap: 1rem; /* গ্যাপ বাড়ানো হয়েছে */
+}
+
+.sort-group label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .sort-group select {
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border-light);
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-medium);
     border-radius: var(--radius-md);
     font-size: 0.9375rem;
     font-family: inherit;
     color: var(--text-primary);
-    background: var(--bg-page);
+    background: var(--bg-card);
     cursor: pointer;
-    transition: all 300ms ease;
-    min-width: 120px;
+    transition: var(--transition);
+    width: 100%; /* পুরো প্রস্থ */
 }
 
 .sort-group select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
+/* Clear Button (ডিজাইন পরিবর্তন) */
 .btn-clear {
-    padding: 0.75rem 1.5rem;
-    background: #ef4444;
-    color: #ffffff;
-    border: none;
+    padding: 0.875rem 1.5rem;
+    background: #FEF2F2; /* light-red */
+    color: #EF4444; /* red-600 */
+    border: 1px solid #FECACA; /* red-200 */
     border-radius: var(--radius-md);
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition);
+    transition: var(--transition);
+    width: 100%; /* পুরো প্রস্থ */
 }
 
 .btn-clear:hover {
-    background: #dc2626;
+    background: #FEE2E2; /* red-100 */
+    border-color: #FCA5A5; /* red-300 */
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 /* ============================================================================
-   Products Grid
+   _5_Component_ProductGrid_
    ============================================================================ */
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* কলাম সাইজ অ্যাডজাস্ট */
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 2rem;
-    margin-bottom: 3rem;
 }
 
 /* ============================================================================
-   State Containers (Loading, Error, Empty)
+   _6_Shared_State_Containers_ (Loading, Error, Empty)
    ============================================================================ */
 
 .state-container,
@@ -400,7 +464,7 @@
     width: 3.5rem;
     height: 3.5rem;
     border: 4px solid var(--bg-surface);
-    border-top-color: var(--primary-color);
+    border-top-color: var(--primary-color); /* নতুন কালার */
     border-radius: 50%;
     margin: 0 auto 1.5rem;
     animation: spinner-rotate 0.8s linear infinite;
@@ -414,11 +478,14 @@
 
 /* Error State */
 .state-container.error {
-    border-color: #fca5a5;
-    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+    border-color: #FCA5A5; /* red-300 */
+    background: #FEF2F2; /* red-50 */
 }
 
-/* Action Buttons */
+/* ============================================================================
+   _7_Shared_Buttons_
+   ============================================================================ */
+
 .action-buttons {
     display: flex;
     justify-content: center;
@@ -433,9 +500,9 @@
     padding: 0.875rem 1.75rem;
     border-radius: var(--radius-md);
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 600; /* ফন্ট পরিবর্তন */
     text-decoration: none;
-    transition: all var(--transition);
+    transition: var(--transition);
     cursor: pointer;
     border: none;
 }
@@ -465,45 +532,31 @@
 }
 
 /* ============================================================================
-   Floating Action Button
+   _8_Responsive_Design_
    ============================================================================ */
 
-.floating-action-btn {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--primary-color);
-    color: #ffffff;
-    padding: 1rem 1.75rem;
-    border-radius: 3rem;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9375rem;
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    box-shadow: 0 8px 24px rgba(0, 102, 255, 0.3);
-    transition: all var(--transition);
-    z-index: 1000;
-}
-
-.floating-action-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 32px rgba(0, 102, 255, 0.4);
-}
-
-.floating-action-btn span:first-child {
-    font-size: 1.5rem;
-    line-height: 1;
-}
-
-/* ============================================================================
-   Responsive Design
-   ============================================================================ */
-
-/* Tablet - 1024px and below */
+/* Tablet (ব্রেকপয়েন্ট পরিবর্তন: 1024px) */
 @media (max-width: 1024px) {
+    /* লেআউট পরিবর্তন: সাইডবার উপরে স্ট্যাক হবে */
+    .products-content-wrapper {
+        grid-template-columns: 1fr; /* এক কলাম */
+        gap: 2.5rem;
+    }
+
+    .filters-section {
+        position: relative; /* Sticky রিমুভ */
+        top: auto;
+        height: auto;
+        overflow-y: visible;
+        padding-right: 0;
+        /* কার্ড স্টাইল যোগ করা হয়েছে */
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 1.5rem;
@@ -516,8 +569,9 @@
         padding: 1.5rem 0 3rem;
     }
 
+    /* Header */
     .page-header {
-        margin-bottom: 2rem;
+        margin-bottom: 0; /* গ্যাপ কন্টেইনারে আছে */
     }
 
     .header-content {
@@ -533,6 +587,7 @@
         display: flex;
     }
 
+    /* Admin */
     .admin-panel {
         padding: 1.5rem;
         text-align: center;
@@ -542,32 +597,42 @@
         font-size: 1.25rem;
     }
 
+    /* Filters (মোবাইল লেআউট অ্যাডজাস্ট) */
     .filters-section {
         padding: 1.5rem;
     }
 
     .filter-controls {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
+        gap: 2rem;
     }
 
     .sort-group {
+        flex-direction: row; /* পাশাপাশি */
+        flex-wrap: wrap; /* প্রয়োজনে র‍্যাপ হবে */
         justify-content: stretch;
+        align-items: center; /* সেন্টারে অ্যালাইন */
+    }
+
+    .sort-group label {
+        flex-basis: 100%; /* লেবেল পুরো প্রস্থে */
     }
 
     .sort-group select {
         flex: 1;
+        min-width: 120px;
     }
 
     .btn-clear {
-        width: 100%;
+        width: auto; /* অটো প্রস্থ */
     }
 
+    /* Grid */
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.25rem;
     }
 
+    /* FAB */
     .floating-action-btn {
         bottom: 1.5rem;
         right: 1.5rem;
@@ -582,6 +647,7 @@
         padding: 0 1rem;
     }
 
+    /* Header */
     .page-header h1 {
         font-size: 1.75rem;
     }
@@ -590,10 +656,12 @@
         font-size: 0.9375rem;
     }
 
+    /* Admin */
     .admin-panel {
         padding: 1.25rem;
     }
 
+    /* Filters */
     .filters-section {
         padding: 1.25rem;
     }
@@ -607,27 +675,42 @@
         gap: 0.5rem;
     }
 
-    .category-filters button {
+    .category-btn {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
     }
+    
+    .sort-group {
+        flex-direction: column; /* ছোট মোবাইলে আবার কলাম */
+        align-items: stretch;
+    }
+    
+    .btn-clear {
+        width: 100%; /* পুরো প্রস্থ */
+    }
 
+    /* Grid */
     .products-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
         max-width: 28rem;
-        margin: 0 auto 3rem;
+        margin: 0 auto;
     }
 
+    /* States */
     .state-container,
     .empty-state {
         padding: 4rem 1.5rem;
     }
 
+    /* FAB (আইকন অনলি) */
     .floating-action-btn {
         bottom: 1rem;
         right: 1rem;
-        padding: 0.75rem 1.25rem;
+        padding: 0.75rem; /* স্কয়ার প্যাডিং */
+        width: 3rem;
+        height: 3rem;
+        justify-content: center;
     }
 
     .floating-action-btn span:last-child {
@@ -640,7 +723,7 @@
 }
 
 /* ============================================================================
-   Accessibility
+   _9_Accessibility_Print_
    ============================================================================ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -653,19 +736,20 @@
     }
 }
 
-/* Focus States */
+/* Focus States (নতুন কালার) */
 .search-box input:focus,
-.category-filters button:focus,
+.category-btn:focus,
 .sort-group select:focus,
 .btn:focus,
 .btn-clear:focus,
 .floating-action-btn:focus {
-    outline: 3px solid rgba(0, 102, 255, 0.4);
+    outline: 3px solid var(--primary-border);
     outline-offset: 2px;
 }
 
 /* Print Styles */
 @media print {
+    .products-content-wrapper,
     .filters-section,
     .admin-panel,
     .floating-action-btn {

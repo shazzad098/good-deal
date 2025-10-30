@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../../actions/productActions';
 import { Link } from 'react-router-dom';
 import ProductItem from './ProductItem';
-import './ProductList.css';
+import './ProductList.css'; 
 
 const ProductList = () => {
     const dispatch = useDispatch();
@@ -15,12 +15,12 @@ const ProductList = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('name');
     const [sortOrder, setSortOrder] = useState('asc');
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); // ব্রেকপয়েন্ট 1024px
 
     // ✅ Load products + responsive detection
     useEffect(() => {
         dispatch(getProducts());
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [dispatch]);
@@ -31,7 +31,7 @@ const ProductList = () => {
         return ['all', ...unique];
     }, [products]);
 
-    // ✅ Filter + Sort Logic
+    // ✅ Filter + Sort Logic (অপরিবর্তিত)
     const filteredAndSorted = useMemo(() => {
         const filtered = products.filter((p) => {
             const matchSearch =
@@ -41,7 +41,7 @@ const ProductList = () => {
             return matchSearch && matchCategory;
         });
 
-        const sorted = filtered.sort((a, b) => {
+        const sorted = [...filtered].sort((a, b) => {
             const getValue = (obj) => {
                 switch (sortBy) {
                     case 'price': return obj.price;
@@ -51,6 +51,13 @@ const ProductList = () => {
             };
             const aVal = getValue(a);
             const bVal = getValue(b);
+
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+                return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+            }
+            if (typeof aVal === 'string' && typeof bVal === 'string') {
+                 return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            }
             return sortOrder === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
         });
 
@@ -99,7 +106,7 @@ const ProductList = () => {
                             <h1>Premium Collection</h1>
                             <p>Discover our curated selection of high-quality products</p>
                         </div>
-                        {!isMobile && (
+                        {!isMobile && ( 
                             <div className="header-stats">
                                 <div className="stat-item">
                                     <span className="stat-number">{products.length}</span>
@@ -115,7 +122,7 @@ const ProductList = () => {
 
                     {isMobile && (
                         <div className="mobile-stats">
-                            <span>{filteredAndSorted.length}/{products.length}</span>
+                            <span>{filteredAndSorted.length}/{products.length} Products</span>
                         </div>
                     )}
                 </header>
@@ -131,69 +138,86 @@ const ProductList = () => {
                     </div>
                 )}
 
-                {/* Filters */}
-                <section className="filters-section">
-                    <div className="search-box">
-                        <input
-                            type="text"
-                            placeholder="Search products by name or description..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        {searchTerm && <button onClick={() => setSearchTerm('')}>✕</button>}
-                    </div>
+                {/* =================================================== */}
+                {/* নতুন সাইডবার লেআউট র‍্যাপার */}
+                {/* =================================================== */}
+                <div className="products-content-wrapper">
+                    
+                    {/* Filters (সাইডবার) */}
+                    <section className="filters-section">
+                        
+                        {/* =================================================== */}
+                        {/* পরিবর্তন: ক্যাটাগরি এবং সর্ট গ্রুপকে উপরে আনা হয়েছে */}
+                        {/* =================================================== */}
+                        <div className="filter-controls">
+                            <div className="filter-group">
+                                <label>Category</label>
+                                <div className="category-filters">
+                                    {categories.map((cat) => (
+                                        <button
+                                            key={cat}
+                                            onClick={() => setSelectedCategory(cat)}
+                                            className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                    <div className="filter-controls">
-                        <div className="filter-group">
-                            <label>Category</label>
-                            <div className="category-filters">
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => setSelectedCategory(cat)}
-                                        className={selectedCategory === cat ? 'active' : ''}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
+                            <div className="sort-group">
+                                <label>Sort By</label>
+                                
+                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                    <option value="name">Name</option>
+                                    <option value="price">Price</option>
+                                    <option value="rating">Rating</option>
+                                </select>
+
+                                <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                    <option value="asc">Asc</option>
+                                    <option value="desc">Desc</option>
+                                </select>
+
+                                <button onClick={handleClearFilters} className="btn btn-clear">
+                                    Clear Filters
+                                </button>
                             </div>
                         </div>
 
-                        <div className="sort-group">
-                            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                <option value="name">Name</option>
-                                <option value="price">Price</option>
-                                <option value="rating">Rating</option>
-                            </select>
-
-                            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-                                <option value="asc">Asc</option>
-                                <option value="desc">Desc</option>
-                            </select>
-
-                            <button onClick={handleClearFilters} className="btn btn-clear">
-                                Clear
-                            </button>
+                        {/* সার্চ বক্সকে নিচে নামানো হয়েছে */}
+                        <div className="search-box">
+                            <input
+                                type="text"
+                                placeholder="Search products by name or description..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-search-btn">✕</button>}
                         </div>
-                    </div>
-                </section>
 
-                {/* Product Grid */}
-                {filteredAndSorted.length === 0 ? (
-                    <div className="empty-state">
-                        <h3>No Products Found</h3>
-                        <p>Try adjusting your filters or search query.</p>
-                        <button onClick={handleClearFilters} className="btn btn-primary">
-                            Reset Filters
-                        </button>
-                    </div>
-                ) : (
-                    <div className="products-grid">
-                        {filteredAndSorted.map((p) => (
-                            <ProductItem key={p._id} product={p} />
-                        ))}
-                    </div>
-                )}
+                    </section>
+                    
+                    {/* প্রোডাক্ট গ্রিড */}
+                    <main className="products-main-area">
+                        {filteredAndSorted.length === 0 ? (
+                            <div className="empty-state">
+                                <h3>No Products Found</h3>
+                                <p>Try adjusting your filters or search query.</p>
+                                <button onClick={handleClearFilters} className="btn btn-primary">
+                                    Reset Filters
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="products-grid">
+                                {filteredAndSorted.map((p) => (
+                                    <ProductItem key={p._id} product={p} />
+                                ))}
+                            </div>
+                        )}
+                    </main>
+
+                </div> {/* .products-content-wrapper শেষ */}
 
                 {/* Floating Add Button (Admin only) */}
                 {isAuthenticated && user?.role === 'admin' && (
