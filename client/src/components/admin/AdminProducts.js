@@ -1,3 +1,5 @@
+// client/src/components/admin/AdminProducts.js
+
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -101,9 +103,7 @@ const AdminProducts = () => {
             });
             fetchProducts();
         } catch (error) {
-            // ✅ FIX: সার্ভার থেকে আসা আসল এরর মেসেজটি লগ করুন
             console.error('Error saving product:', error.response ? error.response.data : error.message);
-
             const errorMsg = error.response?.data?.message || 'Failed to save product';
             showMessage('error', errorMsg);
         }
@@ -173,7 +173,7 @@ const AdminProducts = () => {
         }));
     };
 
-    // Filter products based on search and filters
+    // Filter products
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -216,21 +216,10 @@ const AdminProducts = () => {
     return (
         <div className="admin-products-page">
             <div className="admin-products-container">
-                {/* Header */}
-                <div className="products-header">
-                    <div className="header-content">
-                        <h1>Product Management</h1>
-                        <p>Manage your product inventory efficiently</p>
-                    </div>
-                    <div className="header-actions">
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => setShowForm(true)}
-                        >
-                            <span>➕</span> Add New Product
-                        </button>
-                    </div>
-                </div>
+                
+                {/* ਨਵਾਂ ਡਿਜ਼ਾਈਨ: ਹੈਡਰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਕਿਉਂਕਿ ਇਹ ਹੁਣ AdminDashboard.js ਵਿੱਚ ਹੈ।
+                  "Add New Product" ਬਟਨ ਨੂੰ ਟੂਲਬਾਰ ਵਿੱਚ ਭੇਜ ਦਿੱਤਾ ਗਿਆ ਹੈ।
+                */}
 
                 {/* Message Alert */}
                 {message.text && (
@@ -258,10 +247,15 @@ const AdminProducts = () => {
                             onChange={(e) => setCategoryFilter(e.target.value)}
                         >
                             <option value="all">All Categories</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="mobile-phones">Mobile Phones</option>
-                            <option value="accessories">Accessories</option>
+                            {/* ਨੋਟ: ਸ਼੍ਰੇਣੀਆਂ ਨੂੰ ਗਤੀਸ਼ੀਲ ਰੂਪ ਵਿੱਚ ਲੋਡ ਕਰਨਾ ਬਿਹਤਰ ਹੈ */}
+                            <option value="Electronics">Electronics</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Books">Books</option>
+                            <option value="Home & Garden">Home & Garden</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Beauty">Beauty</option>
+                            <option value="Toys">Toys</option>
+                            <option value="Automotive">Automotive</option>
                         </select>
                         <select
                             className="filter-select"
@@ -273,6 +267,13 @@ const AdminProducts = () => {
                             <option value="low-stock">Low Stock</option>
                             <option value="out-of-stock">Out of Stock</option>
                         </select>
+                         {/* ਨਵਾਂ ਡਿਜ਼ਾਈਨ: ਬਟਨ ਨੂੰ ਇੱਥੇ ਭੇਜਿਆ ਗਿਆ ਹੈ */}
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setShowForm(true)}
+                        >
+                            <span>➕</span> Add New Product
+                        </button>
                     </div>
                 </div>
 

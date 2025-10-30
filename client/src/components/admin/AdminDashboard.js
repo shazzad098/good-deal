@@ -18,10 +18,9 @@ const api = axios.create({
     timeout: 10000,
 });
 
-// Axios ইন্টারসেপ্টর (টোকেন স্বয়ংক্রিয়ভাবে অ্যাড করার জন্য)
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token'); // অথবা Redux state থেকে
+        const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -33,12 +32,9 @@ api.interceptors.request.use(
 );
 
 // ============================================================================
-// কাস্টম হুকস (লজিক আলাদা করা)
+// কাস্টম হুকস
 // ============================================================================
 
-/**
- * Hook: ইউজারের অথেন্টিকেশন এবং অ্যাডমিন রোল চেক করে।
- */
 const useAdminAuth = () => {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useSelector(state => state.auth);
@@ -46,7 +42,7 @@ const useAdminAuth = () => {
 
     useEffect(() => {
         if (!isAuthenticated || user.role !== 'admin') {
-            navigate('/'); // অ্যাডমিন না হলে হোম পেজে রিডাইরেক্ট করুন
+            navigate('/');
         } else {
             setIsAdmin(true);
         }
@@ -55,25 +51,19 @@ const useAdminAuth = () => {
     return { isAdmin, user };
 };
 
-/**
- * Hook: অ্যাডমিন সাইডবার স্টেট (মোবাইল) পরিচালনা করে।
- */
 const useAdminSidebar = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
     const handleNavClick = () => {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 1024) {
             setIsSidebarOpen(false);
         }
     };
 
-    return { isSidebarOpen, toggleSidebar, handleNavClick };
+    return { isSidebarOpen, setIsSidebarOpen, toggleSidebar, handleNavClick };
 };
 
-/**
- * Hook: ড্যাশবোর্ডের পরিসংখ্যান ফেচ করে।
- */
 const useDashboardStats = () => {
     const [stats, setStats] = useState({
         totalRevenue: 0,
@@ -101,37 +91,41 @@ const useDashboardStats = () => {
     return { stats, loading };
 };
 
-/**
- * Hook: বর্তমান অ্যাক্টিভ ট্যাব ট্র্যাক করে।
- */
 const useActiveTab = () => {
     const location = useLocation();
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [pageTitle, setPageTitle] = useState('Dashboard');
+
+    const tabTitleMap = useMemo(() => ({
+        'dashboard': 'Dashboard',
+        'products': 'Product Management',
+        'orders': 'Order Management',
+        'users': 'User Management',
+        'analytics': 'Analytics',
+    }), []);
 
     useEffect(() => {
-        const path = location.pathname.split('/').pop();
-        setActiveTab(path || 'dashboard');
-    }, [location]);
+        const path = location.pathname.split('/admin/').pop().split('/')[0] || 'dashboard';
+        setActiveTab(path);
+        setPageTitle(tabTitleMap[path] || 'Dashboard');
+    }, [location, tabTitleMap]);
 
-    return { activeTab, setActiveTab };
+    return { activeTab, pageTitle, setActiveTab };
 };
 
 
 // ============================================================================
-// সাব-কম্পোনেন্ট (UI বিভাজন)
+// সাব-কম্পোনেন্ট
 // ============================================================================
 
 /**
- * অ্যাডমিন হেডার
+ * কন্টেন্ট এরিয়ার হেডার
  */
-const AdminHeader = memo(({ user, onLogout, onToggleSidebar, isSidebarOpen }) => {
+const AdminContentHeader = memo(({ user, pageTitle, onLogout, onToggleSidebar, isSidebarOpen }) => {
     const navigate = useNavigate();
     return (
-        <div className="admin-header">
-            <div className="admin-header-content">
-                <div className="admin-brand">
-                    <h2>🛍️ GoodDeal Admin</h2>
-                </div>
+        <div className="admin-content-header">
+            <div className="header-left">
                 <button
                     className="hamburger-menu"
                     onClick={onToggleSidebar}
@@ -141,23 +135,25 @@ const AdminHeader = memo(({ user, onLogout, onToggleSidebar, isSidebarOpen }) =>
                     <div className={`hamburger-line ${isSidebarOpen ? 'middle' : ''}`}></div>
                     <div className={`hamburger-line ${isSidebarOpen ? 'bottom' : ''}`}></div>
                 </button>
-                <div className="admin-header-actions">
-                    <span className="admin-welcome">
-                        Welcome, {user?.name}
-                    </span>
-                    <button
-                        onClick={() => navigate('/')}
-                        className="btn btn-outline"
-                    >
-                        View Site
-                    </button>
-                    <button
-                        onClick={onLogout}
-                        className="btn btn-danger"
-                    >
-                        Logout
-                    </button>
-                </div>
+                <h1 className="content-page-title">{pageTitle}</h1>
+            </div>
+            
+            <div className="admin-header-actions">
+                <span className="admin-welcome">
+                    Welcome, {user?.name}
+                </span>
+                <button
+                    onClick={() => navigate('/')}
+                    className="btn btn-outline"
+                >
+                    View Site
+                </button>
+                <button
+                    onClick={onLogout}
+                    className="btn btn-danger"
+                >
+                    Logout
+                </button>
             </div>
         </div>
     );
@@ -166,7 +162,11 @@ const AdminHeader = memo(({ user, onLogout, onToggleSidebar, isSidebarOpen }) =>
 /**
  * অ্যাডমিন সাইডবার (নেভিগেশন)
  */
-const AdminSidebar = memo(({ user, activeTab, setActiveTab, handleNavClick, isSidebarOpen }) => {
+// 
+// ===== পরিবর্তন এখানে =====
+// onLogout এবং navigate prop হিসেবে যোগ করা হয়েছে
+//
+const AdminSidebar = memo(({ activeTab, setActiveTab, handleNavClick, isSidebarOpen, onLogout, navigate }) => {
     const navItems = useMemo(() => [
         { key: 'dashboard', label: 'Dashboard', icon: '📊' },
         { key: 'products', label: 'Products', icon: '📦' },
@@ -177,13 +177,10 @@ const AdminSidebar = memo(({ user, activeTab, setActiveTab, handleNavClick, isSi
 
     return (
         <div className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-            <div className="admin-profile">
-                <div className="admin-avatar">👨‍💼</div>
-                <div className="admin-info">
-                    <h4>{user?.name || 'Admin'}</h4>
-                    <span className="admin-badge">Administrator</span>
-                </div>
+            <div className="admin-sidebar-header">
+                <h2>🛍️ GoodDeal</h2>
             </div>
+            
             <nav className="admin-nav">
                 {navItems.map(item => (
                     <Link
@@ -196,6 +193,24 @@ const AdminSidebar = memo(({ user, activeTab, setActiveTab, handleNavClick, isSi
                     </Link>
                 ))}
             </nav>
+
+            {/* // ===== পরিবর্তন এখানে =====
+            // মোবাইল ভিউয়ের জন্য বাটনগুলো সাইডবারের নিচে যোগ করা হয়েছে
+            // */}
+            <div className="admin-sidebar-mobile-actions">
+                <button
+                    onClick={() => navigate('/')}
+                    className="btn btn-outline"
+                >
+                    View Site
+                </button>
+                <button
+                    onClick={onLogout}
+                    className="btn btn-danger"
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     );
 });
@@ -203,16 +218,21 @@ const AdminSidebar = memo(({ user, activeTab, setActiveTab, handleNavClick, isSi
 /**
  * Stat Card (ড্যাশবোর্ড হোম)
  */
-const StatCard = memo(({ icon, title, value, label }) => (
+const StatCard = memo(({ icon, title, value, trend, trendType = 'positive', iconBgClass }) => (
     <div className="stat-card">
-        <div className="stat-icon">{icon}</div>
         <div className="stat-info">
-            <h3>{title}</h3>
-            <p className="stat-number">{value}</p>
-            <span className="stat-trend positive">{label}</span>
+            <h3 className="stat-title">{title}</h3>
+            <p className="stat-value">{value}</p>
+            <span className={`stat-trend ${trendType}`}>
+                {trendType === 'positive' ? '▲' : '▼'} {trend}
+            </span>
+        </div>
+        <div className={`stat-icon-wrapper ${iconBgClass}`}>
+            {icon}
         </div>
     </div>
 ));
+
 
 /**
  * Quick Actions (ড্যাশবোর্ড হোম)
@@ -221,16 +241,16 @@ const QuickActions = memo(() => (
     <div className="quick-actions">
         <h3>Quick Actions</h3>
         <div className="action-buttons">
-            <Link to="products" className="action-btn">
+            <Link to="../products" className="action-btn">
                 <span className="action-icon">➕</span> Add New Product
             </Link>
-            <Link to="users" className="action-btn">
+            <Link to="../users" className="action-btn">
                 <span className="action-icon">👥</span> Manage Users
             </Link>
-            <Link to="analytics" className="action-btn">
+            <Link to="../analytics" className="action-btn">
                 <span className="action-icon">📊</span> View Reports
             </Link>
-            <Link to="orders" className="action-btn">
+            <Link to="../orders" className="action-btn">
                 <span className="action-icon">📋</span> Process Orders
             </Link>
         </div>
@@ -254,37 +274,48 @@ const DashboardHome = () => {
 
     return (
         <div>
-            <div className="dashboard-header">
-                <h1>Admin Dashboard</h1>
-                <p>Welcome to your administration panel. Manage your store efficiently.</p>
-            </div>
             <div className="stats-grid">
                 <StatCard 
                     icon="💰" 
                     title="Total Revenue" 
                     value={`$${stats.totalRevenue.toFixed(2)}`} 
-                    label="From all orders" 
-                />
-                <StatCard 
-                    icon="📦" 
-                    title="Total Products" 
-                    value={stats.totalProducts} 
-                    label="In catalog" 
-                />
-                <StatCard 
-                    icon="👥" 
-                    title="Total Users" 
-                    value={stats.totalUsers} 
-                    label="Registered users" 
+                    trend="11.5%" 
+                    trendType="positive"
+                    iconBgClass="sales"
                 />
                 <StatCard 
                     icon="📋" 
                     title="Total Orders" 
                     value={stats.totalOrders} 
-                    label="Received" 
+                    trend="3.1%"
+                    trendType="negative"
+                    iconBgClass="orders"
+                />
+                <StatCard 
+                    icon="👥" 
+                    title="Total Users" 
+                    value={stats.totalUsers} 
+                    trend="+5 New"
+                    trendType="positive"
+                    iconBgClass="customers"
+                />
+                <StatCard 
+                    icon="📦" 
+                    title="Total Products" 
+                    value={stats.totalProducts} 
+                    trend="+2 New"
+                    trendType="positive"
+                    iconBgClass="products"
                 />
             </div>
             <QuickActions />
+
+            <div className="charts-placeholder-grid">
+                <div className="chart-placeholder large">
+                    <span className="chart-icon">📈</span>
+                    Sales Analytic Chart
+                </div>
+            </div>
         </div>
     );
 };
@@ -317,55 +348,69 @@ const AdminDashboard = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
-    // কাস্টম হুকস কল করা
     const { isAdmin, user } = useAdminAuth();
-    const { isSidebarOpen, toggleSidebar, handleNavClick } = useAdminSidebar();
-    const { activeTab, setActiveTab } = useActiveTab();
+    const { isSidebarOpen, setIsSidebarOpen, toggleSidebar, handleNavClick } = useAdminSidebar();
+    const { activeTab, pageTitle, setActiveTab } = useActiveTab();
 
     const handleLogout = () => {
         dispatch(logoutUser());
         navigate('/');
     };
 
-    // যদি অ্যাডমিন না হয়, Access Denied দেখাবে
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (isSidebarOpen && window.innerWidth <= 1024) {
+                if (!e.target.closest('.admin-sidebar') && !e.target.closest('.hamburger-menu')) {
+                    setIsSidebarOpen(false);
+                }
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, [isSidebarOpen, setIsSidebarOpen]);
+
+
     if (!isAdmin) {
         return <AdminAccessDenied />;
     }
 
-    // অ্যাডমিন হলে ড্যাশবোর্ড লেআউট দেখাবে
     return (
         <div className="admin-dashboard">
-            <AdminHeader 
-                user={user}
-                onLogout={handleLogout}
-                onToggleSidebar={toggleSidebar}
+            {/* // ===== পরিবর্তন এখানে =====
+            // onLogout এবং navigate prop দুটি পাস করা হয়েছে
+            // */}
+            <AdminSidebar 
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                handleNavClick={handleNavClick}
                 isSidebarOpen={isSidebarOpen}
+                onLogout={handleLogout}
+                navigate={navigate}
             />
 
-            <div className="admin-layout">
-                <AdminSidebar 
+            {isSidebarOpen && (
+                <div className="sidebar-overlay" onClick={toggleSidebar}></div>
+            )}
+
+            <div className="admin-content">
+                <AdminContentHeader
                     user={user}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                    handleNavClick={handleNavClick}
+                    pageTitle={pageTitle}
+                    onLogout={handleLogout}
+                    onToggleSidebar={toggleSidebar}
                     isSidebarOpen={isSidebarOpen}
                 />
-
-                {/* Overlay for mobile menu */}
-                {isSidebarOpen && (
-                    <div className="sidebar-overlay" onClick={toggleSidebar}></div>
-                )}
-
-                <div className="admin-content">
+                
+                <main className="admin-content-main">
                     <Routes>
                         <Route path="dashboard" element={<DashboardHome />} />
                         <Route path="products" element={<AdminProducts />} />
-                        <Route path="orders" element={<OrderManagement />} />
+                        <Route path="orders" element = {<OrderManagement />} />
                         <Route path="users" element={<UserManagement />} />
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="/" element={<DashboardHome />} />
                     </Routes>
-                </div>
+                </main>
             </div>
         </div>
     );

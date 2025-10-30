@@ -1,49 +1,65 @@
-/* Admin Products - Professional Responsive Styles */
+/* Admin Products - Professional Responsive Styles (ਨਵਾਂ ਥੀਮ) */
+
+/* _0_Root_and_Theme_ */
+:root {
+    /* Primary Colors (Pine Green) */
+    --primary-color: #059669; /* emerald-600 */
+    --primary-dark: #047857;  /* emerald-700 */
+    --primary-light: #ECFDF5; /* emerald-50 */
+    --primary-border: #A7F3D0; /* emerald-200 */
+    
+    /* Danger/Error Colors (Red) */
+    --danger-color: #DC2626;  /* red-600 */
+    --danger-dark: #B91C1C;   /* red-700 */
+    --danger-light: #FEF2F2;  /* red-50 */
+    --danger-border: #FECACA; /* red-200 */
+
+    /* Text Colors (Modern Grays) */
+    --text-primary: #111827;   /* gray-900 */
+    --text-secondary: #4B5563; /* gray-600 */
+    --text-muted: #9CA3AF;     /* gray-400 */
+
+    /* Backgrounds */
+    --bg-page: #f9fafb;    /* gray-50 */
+    --bg-card: #ffffff;
+    --bg-surface: #f3f4f6; /* gray-100 */
+
+    /* Borders & Shadows (Subtle) */
+    --border-light: #e5e7eb; /* gray-200 */
+    --border-medium: #d1d5db; /* gray-300 */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    
+    /* Sizing & Transition */
+    --radius-md: 0.5rem;   /* 8px */
+    --radius-lg: 0.75rem;  /* 12px */
+    --radius-xl: 1rem;     /* 16px */
+    --transition: all 200ms ease-in-out;
+    
+    /* Accessibility */
+    --focus-ring-color: #D1FAE5; /* emerald-100 */
+    --focus-border-color: var(--primary-color);
+    --focus-ring-width: 3px;
+}
+
+/* Page Layout */
 .admin-products-page {
     padding: 0;
     min-height: 100vh;
-    background: #f8f9fa;
+    background: transparent; /* ਪੇਰੈਂਟ (AdminDashboard) ਬੈਕਗ੍ਰਾਊਂਡ ਦੀ ਵਰਤੋਂ ਕਰੇਗਾ */
 }
 
 .admin-products-container {
-    max-width: 1400px;
+    max-width: 100%; /* ਕੰਟੇਨਰ ਨੂੰ ਪੂਰੀ ਚੌੜਾਈ ਦਿਓ */
     margin: 0 auto;
-    padding: 30px;
+    padding: 0; /* AdminContentMain ਵਿੱਚ ਪੈਡਿੰਗ ਹੈ */
 }
 
-/* Header Section */
-.products-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 30px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border-left: 5px solid #4361ee;
-}
+/* ਹੈਡਰ ਸੈਕਸ਼ਨ (.products-header)
+  AdminProducts.js ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਇਸ ਲਈ ਸਟਾਈਲ ਹਟਾ ਦਿੱਤੇ ਗਏ ਹਨ।
+*/
 
-.header-content h1 {
-    color: #2b2d42;
-    margin: 0 0 8px 0;
-    font-size: 2.2rem;
-    font-weight: 700;
-}
-
-.header-content p {
-    color: #6c757d;
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.header-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-/* Search and Filter */
+/* Search and Filter (ਨਵਾਂ ਥੀਮ) */
 .products-toolbar {
     display: flex;
     justify-content: space-between;
@@ -51,6 +67,11 @@
     margin-bottom: 25px;
     gap: 20px;
     flex-wrap: wrap;
+    background: var(--bg-card); /* ਟੂਲਬਾਰ ਨੂੰ ਇੱਕ ਕਾਰਡ ਬਣਾਓ */
+    padding: 20px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
 }
 
 .search-box {
@@ -62,17 +83,18 @@
 .search-box input {
     width: 100%;
     padding: 15px 20px 15px 50px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
+    border: 1px solid var(--border-medium); /* ਬਾਰਡਰ ਬਦਲੋ */
+    border-radius: var(--radius-md);
     font-size: 1rem;
-    background: white;
+    background: var(--bg-surface); /* ਬੈਕਗ੍ਰਾਊਂਡ ਬਦਲੋ */
     transition: all 0.3s ease;
 }
 
 .search-box input:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: var(--primary-color);
+    background: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 .search-icon {
@@ -80,7 +102,7 @@
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 1.2rem;
 }
 
@@ -93,9 +115,9 @@
 
 .filter-select {
     padding: 12px 20px;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    background: white;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -103,10 +125,11 @@
 
 .filter-select:focus {
     outline: none;
-    border-color: #4361ee;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
-/* Products Grid */
+/* Products Grid (ਨਵਾਂ ਥੀਮ) */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -115,28 +138,29 @@
 }
 
 .product-card {
-    background: white;
-    border-radius: 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl); /* ਹੋਰ ਗੋਲ */
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
     transition: all 0.3s ease;
     position: relative;
 }
 
 .product-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-md);
 }
 
 .product-image {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-surface); /* ਬੈਕਗ੍ਰਾਊਂਡ ਬਦਲੋ */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--text-muted);
     font-size: 3rem;
 }
 
@@ -154,7 +178,7 @@
 .product-name {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #2b2d42;
+    color: var(--text-primary);
     margin: 0;
     line-height: 1.3;
 }
@@ -162,11 +186,11 @@
 .product-price {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #4361ee;
+    color: var(--primary-color); /* ਥੀਮ ਰੰਗ */
 }
 
 .product-description {
-    color: #6c757d;
+    color: var(--text-secondary);
     margin-bottom: 20px;
     line-height: 1.5;
     display: -webkit-box;
@@ -183,8 +207,9 @@
 }
 
 .category-badge {
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--primary-light); /* ਥੀਮ ਰੰਗ */
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-border);
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -200,18 +225,21 @@
 }
 
 .stock-badge.in-stock {
-    background: #d4edda;
-    color: #155724;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-border);
 }
 
 .stock-badge.low-stock {
-    background: #fff3cd;
-    color: #856404;
+    background: #FFFBEB; /* ਅੰਬਰ-50 */
+    color: #B45309; /* ਅੰਬਰ-700 */
+    border: 1px solid #FDE68A; /* ਅੰਬਰ-200 */
 }
 
 .stock-badge.out-of-stock {
-    background: #f8d7da;
-    color: #721c24;
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border: 1px solid var(--danger-border);
 }
 
 .product-actions {
@@ -220,7 +248,7 @@
     gap: 10px;
 }
 
-/* Form Styles */
+/* Form Styles (ਨਵਾਂ ਥੀਮ) */
 .product-form-overlay {
     position: fixed;
     top: 0;
@@ -237,8 +265,8 @@
 }
 
 .product-form-container {
-    background: white;
-    border-radius: 25px;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
@@ -263,12 +291,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 30px 30px 20px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .form-header h2 {
     margin: 0;
-    color: #2b2d42;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 700;
 }
@@ -277,7 +305,7 @@
     background: none;
     border: none;
     font-size: 2rem;
-    color: #6c757d;
+    color: var(--text-muted);
     cursor: pointer;
     padding: 0;
     width: 40px;
@@ -290,8 +318,8 @@
 }
 
 .close-btn:hover {
-    background: #f8f9fa;
-    color: #dc3545;
+    background: var(--danger-light);
+    color: var(--danger-color);
 }
 
 .product-form {
@@ -317,7 +345,7 @@
 .form-group label {
     margin-bottom: 8px;
     font-weight: 600;
-    color: #2b2d42;
+    color: var(--text-primary);
     font-size: 0.9rem;
 }
 
@@ -325,19 +353,19 @@
 .form-group select,
 .form-group textarea {
     padding: 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: white;
+    background: var(--bg-card);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 .image-input-group {
@@ -352,26 +380,26 @@
 }
 
 .btn-remove-image {
-    background: #dc3545;
+    background: var(--danger-color);
     color: white;
     border: none;
     padding: 10px 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     font-size: 0.8rem;
     transition: all 0.3s ease;
 }
 
 .btn-remove-image:hover {
-    background: #c82333;
+    background: var(--danger-dark);
 }
 
 .btn-add-image {
-    background: #28a745;
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 12px 20px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
@@ -383,7 +411,7 @@
 }
 
 .btn-add-image:hover {
-    background: #218838;
+    background: var(--primary-dark);
     transform: translateY(-2px);
 }
 
@@ -393,13 +421,13 @@
     justify-content: flex-end;
     margin-top: 30px;
     padding-top: 25px;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid var(--border-light);
 }
 
-/* Message Alerts */
+/* Message Alerts (ਨਵਾਂ ਥੀਮ) */
 .message-alert {
     padding: 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     margin-bottom: 25px;
     font-weight: 600;
     display: flex;
@@ -420,25 +448,26 @@
 }
 
 .message-alert.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-border);
 }
 
 .message-alert.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border: 1px solid var(--danger-border);
 }
 
-/* Loading and Empty States */
+/* Loading and Empty States (ਨਵਾਂ ਥੀਮ) */
 .loading-state,
 .empty-state {
     text-align: center;
     padding: 60px 40px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
 }
 
 .empty-icon {
@@ -448,19 +477,19 @@
 }
 
 .empty-state h3 {
-    color: #2b2d42;
+    color: var(--text-primary);
     margin-bottom: 10px;
     font-size: 1.5rem;
 }
 
 .empty-state p {
-    color: #6c757d;
+    color: var(--text-secondary);
     margin-bottom: 25px;
 }
 
 .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #4361ee;
+    border: 4px solid var(--primary-light);
+    border-top: 4px solid var(--primary-color);
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -473,10 +502,10 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
+/* Responsive Design (ਨਵਾਂ ਥੀਮ) */
 @media (max-width: 1024px) {
     .admin-products-container {
-        padding: 25px;
+        padding: 0;
     }
 
     .products-grid {
@@ -487,18 +516,7 @@
 
 @media (max-width: 768px) {
     .admin-products-container {
-        padding: 20px 15px;
-    }
-
-    .products-header {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-        padding: 25px 20px;
-    }
-
-    .header-content h1 {
-        font-size: 1.8rem;
+        padding: 0;
     }
 
     .products-toolbar {
@@ -512,6 +530,13 @@
 
     .filter-group {
         justify-content: space-between;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group .btn-primary {
+        width: 100%;
+        justify-content: center;
     }
 
     .products-grid {
@@ -537,10 +562,6 @@
 }
 
 @media (max-width: 480px) {
-    .header-content h1 {
-        font-size: 1.5rem;
-    }
-
     .product-info {
         padding: 20px;
     }
@@ -561,7 +582,7 @@
     }
 }
 
-/* Custom Scrollbar for Form */
+/* Custom Scrollbar for Form (ਨਵਾਂ ਥੀਮ) */
 .product-form-container::-webkit-scrollbar {
     width: 8px;
 }
@@ -572,10 +593,54 @@
 }
 
 .product-form-container::-webkit-scrollbar-thumb {
-    background: #4361ee;
+    background: var(--primary-color);
     border-radius: 10px;
 }
 
 .product-form-container::-webkit-scrollbar-thumb:hover {
-    background: #3a56d4;
+    background: var(--primary-dark);
+}
+
+/* ਬਟਨਾਂ ਲਈ ਨਵੇਂ ਸਟਾਈਲ */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    font-family: inherit;
+}
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+    border: 1px solid var(--danger-color);
+}
+.btn-danger:hover {
+    background: var(--danger-dark);
+    border-color: var(--danger-dark);
+}
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
 }

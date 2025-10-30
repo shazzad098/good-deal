@@ -1,0 +1,240 @@
+/* client/src/components/admin/Analytics.css */
+
+/*
+এই ফাইলটি Analytics পেজের জন্য নতুন কমলা-থিমযুক্ত স্টাইল।
+*/
+
+/* ============================================================================
+   _1_ কালার ভ্যারিয়েবল (নতুন থিম)
+   ============================================================================ */
+:root {
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb; /* gray-200 */
+    --text-title: #111827;   /* gray-900 */
+    --text-body: #4B5563; /* gray-600 */
+    --text-muted: #9CA3AF;     /* gray-400 */
+    --bg-surface: #f3f4f6; /* gray-100 */
+
+    /* নতুন অ্যাক্সেন্ট কালার (কমলা) */
+    --accent-color: #F97316;  /* Orange-600 */
+    --accent-light: #FFF7ED;  /* Orange-50 */
+    --accent-dark: #EA580C;   /* Orange-700 */
+
+    /* ট্রেন্ড কালার */
+    --trend-positive-bg: #ECFDF5; /* Green-50 */
+    --trend-positive-text: #047857; /* Green-700 */
+    --trend-negative-bg: #FEF2F2; /* Red-50 */
+    --trend-negative-text: #B91C1C; /* Red-700 */
+}
+
+/* ============================================================================
+   _2_ Stat Card Styles (ছবির মতো নতুন ডিজাইন)
+   ============================================================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px; /* নিচের গ্রিড থেকে স্পেসিং */
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem; /* 24px */
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-body);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-title);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+/* ছবির মতো ট্রেন্ড স্টাইল */
+.stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 99px;
+}
+.stat-trend.positive {
+    background: var(--trend-positive-bg);
+    color: var(--trend-positive-text);
+}
+.stat-trend.negative {
+    background: var(--trend-negative-bg);
+    color: var(--trend-negative-text);
+}
+
+/* ছবির মতো আইকন স্টাইল */
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+/* প্রতিটি কার্ডের জন্য আলাদা আইকন কালার */
+.stat-icon-wrapper.sales {
+    background: var(--accent-light);
+    color: var(--accent-color);
+}
+.stat-icon-wrapper.orders {
+    background: #EFF6FF; /* Blue-50 */
+    color: #2563EB; /* Blue-600 */
+}
+.stat-icon-wrapper.customers {
+    background: #F5F3FF; /* Violet-50 */
+    color: #7C3AED; /* Violet-600 */
+}
+.stat-icon-wrapper.products {
+    background: var(--trend-positive-bg);
+    color: var(--trend-positive-text);
+}
+
+
+/* ============================================================================
+   _3_ Analytics Page Specific Styles
+   ============================================================================ */
+
+/* Analytics Card (Quick Actions কে প্রতিস্থাপন করে) */
+.analytics-card {
+    background: var(--card-bg);
+    padding: 1.5rem; /* 24px */
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--card-border);
+    height: 100%; /* গ্রিডে সমান উচ্চতা রাখতে */
+}
+
+.card-title {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    color: var(--text-title);
+    margin-bottom: 1.5rem; /* 24px */
+}
+
+/* Analytics Grid Layout */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* ਮੋਬਾਈਲ 'ਤੇ 1 ਕਾਲਮ */
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+/* ছবির মতো 2fr 1fr লেআউট */
+@media (min-width: 992px) {
+    .analytics-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Revenue Analytics Chart Placeholder */
+.chart-placeholder {
+    width: 100%;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.chart-placeholder .chart-icon {
+    font-size: 3rem;
+    opacity: 0.6;
+}
+
+/* Top Selling Products List */
+.top-products-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.top-product-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* 16px */
+    padding: 0.75rem 0; /* 12px 0 */
+    border-bottom: 1px solid var(--card-border);
+}
+
+.top-product-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.top-product-item:first-child {
+    padding-top: 0;
+}
+
+.top-product-rank {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: grid;
+    place-items: center;
+    color: var(--text-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.top-product-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.top-product-name {
+    font-weight: 600;
+    color: var(--text-title);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.top-product-sales {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.top-product-revenue {
+    font-weight: 700;
+    color: var(--text-title); /* ছবির মতো কালো */
+    font-size: 0.9rem;
+    white-space: nowrap;
+}

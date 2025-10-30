@@ -1,8 +1,37 @@
 // client/src/components/admin/Analytics.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './Analytics.css'; // <-- আপনার অ্যানালিটিক্স CSS
 
-// ✅ Axios instance তৈরি করুন
+// ===============================================
+// ধাপ ১: Chart.js ইম্পোর্ট করুন
+// ===============================================
+import { Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+
+// ===============================================
+// ধাপ ২: Chart.js রেজিস্টার করুন
+// ===============================================
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
+// Axios instance (আগের মতোই)
 const api = axios.create({
     baseURL: 'http://localhost:5000/api',
     timeout: 10000,
@@ -21,6 +50,59 @@ api.interceptors.request.use(
     }
 );
 
+// StatCard কম্পোনেন্ট (আগের মতোই)
+const StatCard = ({ icon, title, value, trend, trendType = 'positive', iconBgClass }) => (
+    <div className="stat-card">
+        <div className="stat-info">
+            <h3 className="stat-title">{title}</h3>
+            <p className="stat-value">{value}</p>
+            <span className={`stat-trend ${trendType}`}>
+                {trendType === 'positive' ? '▲' : '▼'} {trend}
+            </span>
+        </div>
+        <div className={`stat-icon-wrapper ${iconBgClass}`}>
+            {icon}
+        </div>
+    </div>
+);
+
+// ===============================================
+// ধাপ ৩: চার্টের জন্য অপশন এবং ডেমো ডেটা তৈরি করুন
+// ===============================================
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: false, // আমরা কার্ডের টাইটেল ব্যবহার করবো
+        },
+    },
+    scales: {
+        y: {
+            beginAtZero: true
+        }
+    }
+};
+
+const chartData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [
+        {
+            label: 'Revenue',
+            // এই ডেটা আপনি আপনার API থেকে আনবেন
+            data: [1200, 1900, 3000, 2500, 4200, 3800, 5000],
+            borderColor: '#F97316', // আপনার নতুন কমলা থিম
+            backgroundColor: 'rgba(249, 115, 22, 0.2)',
+            tension: 0.3, // লাইনটিকে মসৃণ করতে
+            fill: true,
+        },
+    ],
+};
+
+
 const Analytics = () => {
     const [stats, setStats] = useState({
         totalRevenue: 0,
@@ -29,21 +111,16 @@ const Analytics = () => {
         totalOrders: 0
     });
     const [loading, setLoading] = useState(true);
-
-    // Note: Top products and chart data would require more complex backend endpoints
     const [topProducts, setTopProducts] = useState([]);
 
     useEffect(() => {
         const fetchAllStats = async () => {
             setLoading(true);
             try {
-                // Fetch main stats
                 const statsRes = await api.get('/admin/stats');
                 setStats(statsRes.data);
 
-                // Fetch top products (using product route for now, ideally needs aggregation)
                 const productsRes = await api.get('/admin/products');
-                // Mocking sales data, as backend doesn't provide it
                 const productsWithSales = productsRes.data.products.slice(0, 4).map((p, i) => ({
                     ...p,
                     sales: 100 - i * 15, // Mock sales
@@ -71,119 +148,84 @@ const Analytics = () => {
 
     return (
         <div>
-            <div className="dashboard-header">
-                <h1>Analytics Dashboard</h1>
-                <p>Track your store performance and key metrics</p>
-            </div>
-
-            <div className="quick-actions" style={{marginBottom: '30px'}}>
-                <h3>Performance Overview</h3>
-                {/* Stats Grid */}
+            {/* Performance Overview Section */}
+            <div className="analytics-card" style={{marginBottom: '30px'}}>
+                <h3 className="card-title">Performance Overview</h3>
                 <div className="stats-grid" style={{marginBottom: '0'}}>
-                    <div className="stat-card">
-                        <div className="stat-icon">💰</div>
-                        <div className="stat-info">
-                            <h3>Total Revenue</h3>
-                            <p className="stat-number">${stats.totalRevenue.toFixed(2)}</p>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">📋</div>
-                        <div className="stat-info">
-                            <h3>Total Orders</h3>
-                            <p className="stat-number">{stats.totalOrders}</p>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">👥</div>
-                        <div className="stat-info">
-                            <h3>Total Customers</h3>
-                            <p className="stat-number">{stats.totalUsers}</p>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">📦</div>
-                        <div className="stat-info">
-                            <h3>Total Products</h3>
-                            <p className="stat-number">{stats.totalProducts}</p>
-                        </div>
-                    </div>
+                    <StatCard 
+                        icon="💰" 
+                        title="Total Revenue" 
+                        value={`$${stats.totalRevenue.toFixed(2)}`} 
+                        trend="11.5%"
+                        trendType="positive"
+                        iconBgClass="sales"
+                    />
+                    <StatCard 
+                        icon="📋" 
+                        title="Total Orders" 
+                        value={stats.totalOrders} 
+                        trend="3.1%"
+                        trendType="negative"
+                        iconBgClass="orders"
+                    />
+                    <StatCard 
+                        icon="👥" 
+                        title="Total Customers" 
+                        value={stats.totalUsers} 
+                        trend="+5 New"
+                        trendType="positive"
+                        iconBgClass="customers"
+                    />
+                    <StatCard 
+                        icon="📦" 
+                        title="Total Products" 
+                        value={stats.totalProducts} 
+                        trend="+2 New"
+                        trendType="positive"
+                        iconBgClass="products"
+                    />
                 </div>
             </div>
 
-            {/* Charts and Additional Data */}
-            <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px', marginBottom: '30px'}}>
-                {/* Main Chart */}
-                <div className="quick-actions">
-                    <h3>Sales Overview</h3>
-                    <div style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        height: '300px',
-                        borderRadius: '15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        flexDirection: 'column',
-                        gap: '15px'
-                    }}>
-                        <div style={{fontSize: '3rem'}}>📈</div>
-                        <div style={{textAlign: 'center'}}>
-                            <div style={{fontSize: '1.2rem', fontWeight: '600'}}>
-                                Interactive Sales Chart
-                            </div>
-                            <div style={{opacity: 0.8}}>
-                                (Chart.js integration needed)
-                            </div>
-                        </div>
+            {/* Charts and Additional Data Grid */}
+            <div className="analytics-grid">
+                
+                {/* Revenue Analytics Card */}
+                <div className="analytics-card">
+                    <h3 className="card-title">Revenue Analytics</h3>
+                    
+                    {/* =============================================== */}
+                    {/* ধাপ ৪: Placeholder-এর বদলে চার্ট বসান */}
+                    {/* =============================================== */}
+                    <div style={{ height: '350px' }}> {/* চার্টের উচ্চতা ঠিক রাখতে */}
+                        <Line options={chartOptions} data={chartData} />
                     </div>
                 </div>
 
-                {/* Top Products */}
-                <div className="quick-actions">
-                    <h3>Top Products</h3>
-                    <div style={{padding: '20px 0'}}>
+                {/* Top Selling Products Card (আগের মতোই) */}
+                <div className="analytics-card">
+                    <h3 className="card-title">Top Selling Products</h3>
+                    <ul className="top-products-list">
                         {topProducts.length === 0 && <p>No products found.</p>}
                         {topProducts.map((product, index) => (
-                            <div key={index} style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '15px',
-                                padding: '15px 0',
-                                borderBottom: index < topProducts.length - 1 ? '1px solid #eee' : 'none'
-                            }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '10px',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontSize: '1.2rem',
-                                    fontWeight: '600'
-                                }}>
+                            <li key={index} className="top-product-item">
+                                <div className="top-product-rank">
                                     {index + 1}
                                 </div>
-                                <div style={{flex: 1}}>
-                                    <div style={{fontWeight: '600', color: '#2b2d42', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                                <div className="top-product-info">
+                                    <div className="top-product-name">
                                         {product.name}
                                     </div>
-                                    <div style={{fontSize: '0.8rem', color: '#6c757d'}}>
+                                    <div className="top-product-sales">
                                         {product.sales} sales (mock)
                                     </div>
                                 </div>
-                                <div style={{
-                                    fontWeight: '700',
-                                    color: '#4361ee',
-                                    fontSize: '0.9rem'
-                                }}>
+                                <div className="top-product-revenue">
                                     ${product.revenue.toFixed(2)}
                                 </div>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </div>
             </div>
         </div>
