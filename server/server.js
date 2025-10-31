@@ -7,10 +7,13 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors({
-    origin: ['http://localhost:3000', 'https://gooddeal-bd.com/'],
-    credentials: true,
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://gooddeal-bd.com');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 
 
 app.use(express.json());
