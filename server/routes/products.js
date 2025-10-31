@@ -5,10 +5,32 @@ const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
+// === PORIBORTON EKHANE ===
 // GET /api/products - Get all products (Public)
+// Ekhon eta category ebong limit query support korbe
 router.get('/', async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: -1 });
+        const { category, limit } = req.query;
+
+        // Ekta filter object toiri kora
+        const filter = {};
+
+        // Jodi URL-e category query thake, setake filter object-e add kora
+        if (category) {
+            filter.category = category;
+        }
+        
+        // Database query toiri kora
+        let query = Product.find(filter).sort({ createdAt: -1 });
+
+        // Jodi limit query thake, setake apply kora
+        if (limit) {
+            query = query.limit(parseInt(limit));
+        }
+
+        // Query execute kora
+        const products = await query;
+        
         res.json({
             success: true,
             count: products.length,
@@ -22,6 +44,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
+// ==========================
 
 // GET /api/products/:id - Get single product (Public)
 router.get('/:id', async (req, res) => {

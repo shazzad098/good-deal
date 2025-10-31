@@ -189,16 +189,6 @@
     margin-bottom: 1rem;
 }
 
-.brand-icon {
-    font-size: 2.25rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 0.625rem;
-    border-radius: 0.875rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
 
 .brand-logo h2 {
     font-size: 1.75rem;
@@ -517,11 +507,6 @@
 
     .newsletter-text h3 {
         font-size: 1.375rem;
-    }
-
-    .brand-icon {
-        font-size: 2rem;
-        padding: 0.5rem;
     }
 
     .brand-logo h2 {

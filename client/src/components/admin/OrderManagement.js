@@ -5,7 +5,7 @@ import './AdminProducts.css'; // একই স্টাইল ব্যবহা
 
 // ✅ Axios instance তৈরি করুন
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: '/api', // Shudhu '/api' hobe
     timeout: 10000,
 });
 

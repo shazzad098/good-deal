@@ -57,8 +57,8 @@ const Footer = () => {
                         {/* Company Info */}
                         <div className="footer-col footer-brand">
                             <div className="brand-logo">
-                                <span className="brand-icon">🛒</span>
-                                <h2>GoodDeal</h2>
+                                
+                                <h2>Good Deal</h2>
                             </div>
                             <p className="brand-description">
                                 Your trusted destination for premium products at unbeatable prices.

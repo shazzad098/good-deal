@@ -2,36 +2,50 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../../actions/productActions';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import ProductItem from './ProductItem';
 import './ProductList.css'; 
+
+// URL query parse korar jonno ekta helper function
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 
 const ProductList = () => {
     const dispatch = useDispatch();
     const { products, loading, error } = useSelector((state) => state.products);
     const { isAuthenticated, user } = useSelector((state) => state.auth);
 
+    const query = useQuery();
+    const categoryFromUrl = query.get('category');
+
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || 'all');
     const [sortBy, setSortBy] = useState('name');
     const [sortOrder, setSortOrder] = useState('asc');
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); // ব্রেকপয়েন্ট 1024px
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    
+    // === PORIBORTON EKHANE: Mobile filter menu-r jonno state ===
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    // =========================================================
 
     // ✅ Load products + responsive detection
     useEffect(() => {
-        dispatch(getProducts());
+        dispatch(getProducts()); 
+
         const handleResize = () => setIsMobile(window.innerWidth < 1024);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+        
     }, [dispatch]);
 
     // ✅ Unique categories
     const categories = useMemo(() => {
-        const unique = [...new Set(products.map((p) => p.category))];
-        return ['all', ...unique];
+         const unique = [...new Set(products.map((p) => p.category))];
+         return ['all', ...unique.sort()];
     }, [products]);
 
-    // ✅ Filter + Sort Logic (অপরিবর্তিত)
+    // ✅ Filter + Sort Logic
     const filteredAndSorted = useMemo(() => {
         const filtered = products.filter((p) => {
             const matchSearch =
@@ -62,14 +76,20 @@ const ProductList = () => {
         });
 
         return sorted;
-    }, [products, searchTerm, selectedCategory, sortBy, sortOrder]);
+    }, [products, searchTerm, sortBy, sortOrder, selectedCategory]);
 
     const handleClearFilters = () => {
         setSearchTerm('');
-        setSelectedCategory('all');
+        setSelectedCategory('all'); 
         setSortBy('name');
         setSortOrder('asc');
     };
+    
+    // === PORIBORTON EKHANE: Filter menu toggle function ===
+    const toggleFilterMenu = () => {
+        setIsFilterOpen(!isFilterOpen);
+    };
+    // ====================================================
 
     // ✅ Loading state
     if (loading)
@@ -106,6 +126,7 @@ const ProductList = () => {
                             <h1>Premium Collection</h1>
                             <p>Discover our curated selection of high-quality products</p>
                         </div>
+                        {/* Desktop Stats */}
                         {!isMobile && ( 
                             <div className="header-stats">
                                 <div className="stat-item">
@@ -120,11 +141,15 @@ const ProductList = () => {
                         )}
                     </div>
 
-                    {isMobile && (
-                        <div className="mobile-stats">
-                            <span>{filteredAndSorted.length}/{products.length} Products</span>
-                        </div>
-                    )}
+                    {/* === PORIBORTON EKHANE: Mobile Stats Bar-e Filter Button Add === */}
+                    <div className="mobile-stats">
+                        <span>{filteredAndSorted.length} Products Found</span>
+                        <button className="filter-toggle-btn" onClick={toggleFilterMenu}>
+                            <span>Filters</span>
+                            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"></path></svg>
+                        </button>
+                    </div>
+                    {/* ============================================================ */}
                 </header>
 
                 {/* Admin Panel */}
@@ -138,31 +163,40 @@ const ProductList = () => {
                     </div>
                 )}
 
-                {/* =================================================== */}
-                {/* নতুন সাইডবার লেআউট র‍্যাপার */}
-                {/* =================================================== */}
                 <div className="products-content-wrapper">
                     
+                    {/* === PORIBORTON EKHANE: Overlay add kora holo === */}
+                    {isFilterOpen && <div className="filter-overlay" onClick={toggleFilterMenu}></div>}
+                    
                     {/* Filters (সাইডবার) */}
-                    <section className="filters-section">
+                    {/* === PORIBORTON EKHANE: 'open' class add kora holo === */}
+                    <section className={`filters-section ${isFilterOpen ? 'open' : ''}`}>
+                    {/* =================================================== */}
                         
-                        {/* =================================================== */}
-                        {/* পরিবর্তন: ক্যাটাগরি এবং সর্ট গ্রুপকে উপরে আনা হয়েছে */}
-                        {/* =================================================== */}
+                        <div className="search-box">
+                            <input
+                                type="text"
+                                placeholder="Search products by name or description..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-search-btn">✕</button>}
+                        </div>
+                        
                         <div className="filter-controls">
-                            <div className="filter-group">
+                            
+                            <div className="sort-group">
                                 <label>Category</label>
-                                <div className="category-filters">
+                                <select 
+                                    value={selectedCategory} 
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
                                     {categories.map((cat) => (
-                                        <button
-                                            key={cat}
-                                            onClick={() => setSelectedCategory(cat)}
-                                            className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
-                                        >
-                                            {cat}
-                                        </button>
+                                        <option key={cat} value={cat}>
+                                            {cat === 'all' ? 'All Categories' : cat}
+                                        </option>
                                     ))}
-                                </div>
+                                </select>
                             </div>
 
                             <div className="sort-group">
@@ -183,17 +217,6 @@ const ProductList = () => {
                                     Clear Filters
                                 </button>
                             </div>
-                        </div>
-
-                        {/* সার্চ বক্সকে নিচে নামানো হয়েছে */}
-                        <div className="search-box">
-                            <input
-                                type="text"
-                                placeholder="Search products by name or description..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            {searchTerm && <button onClick={() => setSearchTerm('')} className="clear-search-btn">✕</button>}
                         </div>
 
                     </section>

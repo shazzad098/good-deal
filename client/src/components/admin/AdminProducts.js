@@ -14,15 +14,23 @@ const AdminProducts = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [stockFilter, setStockFilter] = useState('all');
+    const [message, setMessage] = useState({ type: '', text: '' });
+
+    // === PORIBORTON: formData state poriborton (images ekhon file list hobe) ===
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         price: '',
         category: '',
         stock: '',
-        images: ['']
+        images: [] // URL string array-er bodole file array hobe
     });
-    const [message, setMessage] = useState({ type: '', text: '' });
+
+    // === NOTUN: Editing korar somoy purono image URL gulo track korar state ===
+    const [existingImages, setExistingImages] = useState([]);
+    
+    // === NOTUN: Category list-er jonno state ===
+    const [categories, setCategories] = useState([]);
 
     const { user, isAuthenticated } = useSelector(state => state.auth);
     const navigate = useNavigate();
@@ -37,6 +45,7 @@ const AdminProducts = () => {
     useEffect(() => {
         if (isAuthenticated && user?.role === 'admin') {
             fetchProducts();
+            fetchCategories(); // === NOTUN: Categories fetch kora
         }
     }, [isAuthenticated, user]);
 
@@ -60,6 +69,20 @@ const AdminProducts = () => {
         }
     };
 
+    // === NOTUN: Category fetch function ===
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('/api/admin/categories', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setCategories(res.data.categories || []);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            // Error message na dekhaleo cholbe, just silently fail korbe
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -68,40 +91,64 @@ const AdminProducts = () => {
         }));
     };
 
+    // === NOTUN: File input handle korar function ===
+    const handleFileChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            images: [...e.target.files] // FileList object-ke array-te convert kora
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const productData = {
-                ...formData,
-                price: parseFloat(formData.price),
-                stock: parseInt(formData.stock),
-                images: formData.images.filter(img => img.trim() !== '')
-            };
+            
+            // === PORIBORTON: JSON-er bodole FormData use kora ===
+            const productData = new FormData();
+            productData.append('name', formData.name);
+            productData.append('description', formData.description);
+            productData.append('price', parseFloat(formData.price));
+            productData.append('stock', parseInt(formData.stock));
+            productData.append('category', formData.category);
+
+            // Notun image file-gulo append kora
+            formData.images.forEach(imageFile => {
+                productData.append('images', imageFile);
+            });
 
             if (editingProduct) {
+                // Update-er somoy purono image URL gulo pathano
+                existingImages.forEach(imgUrl => {
+                    productData.append('existingImages', imgUrl);
+                });
+
                 await axios.put(`/api/admin/products/${editingProduct._id}`, productData, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data' // Header set kora
+                    }
                 });
                 showMessage('success', 'Product updated successfully! 🎉');
             } else {
                 await axios.post('/api/admin/products', productData, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data' // Header set kora
+                    }
                 });
                 showMessage('success', 'Product created successfully! 🎉');
             }
 
+            // Reset form
             setShowForm(false);
             setEditingProduct(null);
             setFormData({
-                name: '',
-                description: '',
-                price: '',
-                category: '',
-                stock: '',
-                images: ['']
+                name: '', description: '', price: '', category: '', stock: '', images: []
             });
+            setExistingImages([]); // Reset existing images
             fetchProducts();
+            fetchCategories(); // === NOTUN: Category list update kora
         } catch (error) {
             console.error('Error saving product:', error.response ? error.response.data : error.message);
             const errorMsg = error.response?.data?.message || 'Failed to save product';
@@ -117,8 +164,10 @@ const AdminProducts = () => {
             price: product.price,
             category: product.category,
             stock: product.stock,
-            images: product.images && product.images.length > 0 ? product.images : ['']
+            images: [] // Edit form-e shudhu notun file upload hobe
         });
+        // Purono image URL gulo state-e save kora
+        setExistingImages(product.images && product.images.length > 0 ? product.images : []);
         setShowForm(true);
     };
 
@@ -143,41 +192,26 @@ const AdminProducts = () => {
         setShowForm(false);
         setEditingProduct(null);
         setFormData({
-            name: '',
-            description: '',
-            price: '',
-            category: '',
-            stock: '',
-            images: ['']
+            name: '', description: '', price: '', category: '', stock: '', images: []
         });
+        setExistingImages([]); // Reset existing images
     };
 
-    const addImageField = () => {
-        setFormData(prev => ({
-            ...prev,
-            images: [...prev.images, '']
-        }));
-    };
-
-    const removeImageField = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            images: prev.images.filter((_, i) => i !== index)
-        }));
-    };
-
-    const handleImageChange = (index, value) => {
-        setFormData(prev => ({
-            ...prev,
-            images: prev.images.map((img, i) => i === index ? value : img)
-        }));
+    // === NOTUN: Purono image remove korar function ===
+    const removeExistingImage = (imgUrl) => {
+        setExistingImages(prev => prev.filter(img => img !== imgUrl));
     };
 
     // Filter products
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             product.description.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        // === PORIBORTON: Notun dynamic category list theke filter kora ===
+        const dynamicCategories = [...new Set(products.map(p => p.category))];
         const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+        // =============================================================
+
         const matchesStock = stockFilter === 'all' ||
             (stockFilter === 'in-stock' && product.stock > 0) ||
             (stockFilter === 'out-of-stock' && product.stock === 0) ||
@@ -186,6 +220,10 @@ const AdminProducts = () => {
         return matchesSearch && matchesCategory && matchesStock;
     });
 
+    // === PORIBORTON: Dynamic category list toiri kora ===
+    const uniqueCategories = [...new Set(products.map(p => p.category))];
+    // ===================================================
+
     const getStockStatus = (stock) => {
         if (stock === 0) return 'out-of-stock';
         if (stock < 10) return 'low-stock';
@@ -193,34 +231,13 @@ const AdminProducts = () => {
     };
 
     if (!isAuthenticated || user?.role !== 'admin') {
-        return (
-            <div className="admin-products-page">
-                <div className="admin-access-denied">
-                    <div className="access-denied-content">
-                        <div style={{fontSize: '4rem', marginBottom: '20px'}}>🚫</div>
-                        <h2>Access Denied</h2>
-                        <p>You do not have permission to access this page.</p>
-                        <button
-                            onClick={() => navigate('/')}
-                            className="btn btn-primary"
-                            style={{marginTop: '20px'}}
-                        >
-                            Go to Homepage
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
+        // ... (Access Denied JSX)
     }
 
     return (
         <div className="admin-products-page">
             <div className="admin-products-container">
                 
-                {/* ਨਵਾਂ ਡਿਜ਼ਾਈਨ: ਹੈਡਰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਕਿਉਂਕਿ ਇਹ ਹੁਣ AdminDashboard.js ਵਿੱਚ ਹੈ।
-                  "Add New Product" ਬਟਨ ਨੂੰ ਟੂਲਬਾਰ ਵਿੱਚ ਭੇਜ ਦਿੱਤਾ ਗਿਆ ਹੈ।
-                */}
-
                 {/* Message Alert */}
                 {message.text && (
                     <div className={`message-alert ${message.type}`}>
@@ -241,22 +258,18 @@ const AdminProducts = () => {
                         />
                     </div>
                     <div className="filter-group">
+                        {/* === PORIBORTON: Dynamic Category Filter === */}
                         <select
                             className="filter-select"
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
                         >
                             <option value="all">All Categories</option>
-                            {/* ਨੋਟ: ਸ਼੍ਰੇਣੀਆਂ ਨੂੰ ਗਤੀਸ਼ੀਲ ਰੂਪ ਵਿੱਚ ਲੋਡ ਕਰਨਾ ਬਿਹਤਰ ਹੈ */}
-                            <option value="Electronics">Electronics</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Books">Books</option>
-                            <option value="Home & Garden">Home & Garden</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Beauty">Beauty</option>
-                            <option value="Toys">Toys</option>
-                            <option value="Automotive">Automotive</option>
+                            {uniqueCategories.map((cat, index) => (
+                                <option key={index} value={cat}>{cat}</option>
+                            ))}
                         </select>
+                        {/* ========================================= */}
                         <select
                             className="filter-select"
                             value={stockFilter}
@@ -267,7 +280,6 @@ const AdminProducts = () => {
                             <option value="low-stock">Low Stock</option>
                             <option value="out-of-stock">Out of Stock</option>
                         </select>
-                         {/* ਨਵਾਂ ਡਿਜ਼ਾਈਨ: ਬਟਨ ਨੂੰ ਇੱਥੇ ਭੇਜਿਆ ਗਿਆ ਹੈ */}
                         <button
                             className="btn btn-primary"
                             onClick={() => setShowForm(true)}
@@ -338,55 +350,73 @@ const AdminProducts = () => {
                                         />
                                     </div>
 
+                                    {/* === PORIBORTON: Dynamic Category Input === */}
                                     <div className="form-group">
                                         <label>Category *</label>
-                                        <select
+                                        <input
+                                            type="text"
                                             name="category"
                                             value={formData.category}
                                             onChange={handleInputChange}
                                             required
-                                        >
-                                            <option value="">Select Category</option>
-                                            <option value="Electronics">Electronics</option>
-                                            <option value="Clothing">Clothing</option>
-                                            <option value="Books">Books</option>
-                                            <option value="Home & Garden">Home & Garden</option>
-                                            <option value="Sports">Sports</option>
-                                            <option value="Beauty">Beauty</option>
-                                            <option value="Toys">Toys</option>
-                                            <option value="Automotive">Automotive</option>
-                                        </select>
+                                            list="category-list" // datalist-er sathe connect kora
+                                            placeholder="Select or type a category"
+                                        />
+                                        {/* Datalist existing category-r suggestion dekhabe */}
+                                        <datalist id="category-list">
+                                            {categories.map((cat, index) => (
+                                                <option key={index} value={cat} />
+                                            ))}
+                                        </datalist>
                                     </div>
+                                    {/* ========================================= */}
 
+                                    {/* === PORIBORTON: Image Input Field === */}
                                     <div className="form-group full-width">
-                                        <label>Product Images</label>
-                                        {formData.images.map((image, index) => (
-                                            <div key={index} className="image-input-group">
-                                                <input
-                                                    type="url"
-                                                    value={image}
-                                                    onChange={(e) => handleImageChange(index, e.target.value)}
-                                                    placeholder="https://example.com/image.jpg"
-                                                />
-                                                {formData.images.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        className="btn-remove-image"
-                                                        onClick={() => removeImageField(index)}
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                        <button
-                                            type="button"
-                                            className="btn-add-image"
-                                            onClick={addImageField}
-                                        >
-                                            <span>➕</span> Add Another Image
-                                        </button>
+                                        <label>Product Images (Multiple select korun)</label>
+                                        <input
+                                            type="file"
+                                            name="images"
+                                            onChange={handleFileChange}
+                                            multiple // Multiple file upload allow kora
+                                            accept="image/*" // Shudhu image file
+                                            style={{
+                                                padding: '10px',
+                                                background: '#f3f4f6',
+                                                border: '1px solid var(--border-medium)',
+                                                borderRadius: 'var(--radius-md)'
+                                            }}
+                                        />
                                     </div>
+                                    {/* ======================================= */}
+
+                                    {/* === NOTUN: Purono image gulo show kora (jodi edit mode-e thake) === */}
+                                    {editingProduct && existingImages.length > 0 && (
+                                        <div className="form-group full-width">
+                                            <label>Current Images (Click ⤬ to remove)</label>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', padding: '10px', background: '#f3f4f6', borderRadius: '8px' }}>
+                                                {existingImages.map((imgUrl, index) => (
+                                                    <div key={index} style={{ position: 'relative' }}>
+                                                        <img src={imgUrl} alt="product-preview" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ddd' }} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeExistingImage(imgUrl)}
+                                                            style={{
+                                                                position: 'absolute', top: '-5px', right: '-5px',
+                                                                background: '#DC2626', color: 'white', border: 'none',
+                                                                borderRadius: '50%', width: '20px', height: '20px',
+                                                                cursor: 'pointer', display: 'grid', placeItems: 'center',
+                                                                fontSize: '14px', fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* =================================================================== */}
                                 </div>
 
                                 <div className="form-actions">

@@ -34,8 +34,8 @@ const Navbar = () => {
             <div className="nav-container">
                 <div className="nav-brand">
                     <Link to="/" onClick={closeMenu}>
-                        <span className="brand-icon">🛍️</span>
-                        <span className="brand-text">GoodDeal</span>
+                        
+                        <span className="brand-text">Good Deal</span>
                     </Link>
                 </div>
 

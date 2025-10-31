@@ -38,8 +38,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Serve uploaded files statically (if you have file uploads)
+// === PORIBORTON EKHANE ===
+// Serve uploaded files statically
+// Ekhon /uploads path-e file-gulo access kora jabe
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// ==========================
 
 // Test route
 app.get('/', (req, res) => {

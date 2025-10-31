@@ -1,9 +1,6 @@
 // client/src/actions/authActions.js
 import axios from 'axios';
 
-// Set API base URL
-axios.defaults.baseURL = 'http://localhost:5000';
-
 // Remove Alert (এটি অপরিবর্তিত)
 export const removeAlert = (id) => ({
     type: 'REMOVE_ALERT',

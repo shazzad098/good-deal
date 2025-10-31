@@ -35,6 +35,10 @@
     
     /* Transition */
     --transition: all 200ms ease-in-out;
+    
+    /* === PORIBORTON EKHANE: Animation smoother kora holo === */
+    --transition-menu: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* =================================================== */
 }
 
 /* ============================================================================
@@ -62,7 +66,7 @@
 
 .products-content-wrapper {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 2.5rem;
     align-items: flex-start;
 }
@@ -140,8 +144,9 @@
 }
 
 .mobile-stats {
-    display: none;
-    justify-content: center;
+    display: none; /* Desktop-e hide */
+    justify-content: space-between; /* Space between text and button */
+    align-items: center;
     margin-top: 1.5rem;
     padding: 0.75rem 1.25rem;
     background: var(--bg-surface);
@@ -149,6 +154,27 @@
     font-weight: 700;
     color: var(--text-secondary);
     font-size: 0.9375rem;
+}
+
+/* Mobile Filter Toggle Button */
+.filter-toggle-btn {
+    display: none; /* Desktop-e hide */
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.filter-toggle-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-dark);
 }
 
 /* ============================================================================
@@ -242,10 +268,23 @@
     top: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 1.5rem; 
     height: calc(100vh - 4.5rem);
     overflow-y: auto;
-    padding-right: 1rem;
+    overflow-x: hidden;
+}
+
+/* Mobile Filter Overlay */
+.filter-overlay {
+    display: none; /* Desktop-e hide */
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    /* === PORIBORTON EKHANE: Animation use kora === */
+    opacity: 0;
+    transition: opacity var(--transition-menu);
+    /* ========================================= */
 }
 
 /* Search Box */
@@ -524,31 +563,80 @@
    _8_Responsive_Design_
    ============================================================================ */
 
-/* Tablet (1024px) */
+/* Mobile Filter Sidebar */
 @media (max-width: 1024px) {
     .products-content-wrapper {
         grid-template-columns: 1fr;
         gap: 2.5rem;
     }
 
+    .mobile-stats {
+        display: flex; 
+    }
+    
+    .filter-toggle-btn {
+        display: inline-flex;
+    }
+    
+    .header-stats {
+        display: none;
+    }
+
     .filters-section {
-        position: relative;
-        top: auto;
-        height: auto;
-        overflow-y: visible;
-        padding-right: 0;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 320px; /* Sidebar width */
+        max-width: 90%;
+        height: 100vh;
         background: var(--bg-card);
         border: 1px solid var(--border-light);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        box-shadow: var(--shadow-sm);
+        border-radius: 0;
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        z-index: 2000;
+        transform: translateX(100%); /* Off-screen */
+        /* === PORIBORTON EKHANE: Animation use kora === */
+        transition: transform var(--transition-menu);
+        /* ========================================= */
+        overflow-y: auto;
     }
+
+    /* 'open' class dile sidebar show hobe */
+    .filters-section.open {
+        transform: translateX(0);
+    }
+    
+    /* Overlay show kora */
+    .filter-overlay {
+        display: block;
+    }
+    
+    /* === NOTUN: 'open' class dile overlay fade in hobe === */
+    .filters-section.open + .products-main-area .filter-overlay,
+    .filter-overlay {
+        display: block;
+        opacity: 0;
+        pointer-events: none; /* Hide kora obosthay jeno click na pore */
+    }
+    .filters-section.open + .products-main-area .filter-overlay,
+    .filter-overlay.open { /* .filter-overlay keo .open class deya jete pare JS theke */
+        opacity: 1;
+        pointer-events: auto; /* Show hole jeno click kora jay */
+    }
+    /* =================================================== */
+
 
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 1.5rem;
     }
+    
+    /* === PORIBORTON: Filter overlay .products-main-area-r vitor thakle === */
+    /* Eita ProductList.js-er structure-er upor nirvor kore */
+    /* Apnar JS file onujayi overlay filters-section-er baire ache, tai thik ache */
 }
+
 
 /* Tablet Small - 768px and below */
 @media (max-width: 768px) {
@@ -562,12 +650,7 @@
         flex-direction: column;
         gap: 1rem;
     }
-    .header-stats {
-        display: none;
-    }
-    .mobile-stats {
-        display: flex;
-    }
+    
     .admin-panel {
         padding: 1.5rem;
         text-align: center;
@@ -575,6 +658,7 @@
     .admin-panel h3 {
         font-size: 1.25rem;
     }
+    
     .filters-section {
         padding: 1.5rem;
     }
@@ -582,21 +666,21 @@
         gap: 2rem;
     }
     .sort-group {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: stretch;
-        align-items: center;
+        flex-direction: column; 
+        flex-wrap: nowrap;
+        align-items: stretch;
     }
     .sort-group label {
-        flex-basis: 100%;
+        flex-basis: auto;
     }
     .sort-group select {
         flex: 1;
-        min-width: 120px;
+        min-width: 100%;
     }
     .btn-clear {
-        width: auto;
+        width: 100%;
     }
+    
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.25rem;
@@ -636,13 +720,6 @@
     .category-btn {
         padding: 0.5rem 0;
         font-size: 0.875rem;
-    }
-    .sort-group {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .btn-clear {
-        width: 100%;
     }
     .products-grid {
         grid-template-columns: 1fr;
@@ -690,7 +767,8 @@
 .sort-group select:focus,
 .btn:focus,
 .btn-clear:focus,
-.floating-action-btn:focus {
+.floating-action-btn:focus,
+.filter-toggle-btn:focus {
     outline: 3px solid var(--primary-border);
     outline-offset: 2px;
 }

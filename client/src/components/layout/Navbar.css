@@ -37,11 +37,6 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.brand-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
 .brand-text {
     background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
     -webkit-background-clip: text;
@@ -246,10 +241,6 @@
 
     .nav-brand a {
         font-size: 24px;
-    }
-
-    .brand-icon {
-        font-size: 28px;
     }
 
     .hamburger {

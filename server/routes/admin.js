@@ -7,8 +7,54 @@ const admin = require('../middleware/admin');
 const User = require('../models/User');
 const Order = require('../models/Order');
 
+// === MULTER SETUP START ===
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Upload directory ensure kora
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir); // File kothay save hobe
+    },
+    filename: function (req, file, cb) {
+        // Unique filename toiri kora
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage: storage });
+// === MULTER SETUP END ===
+
+
 // Middleware to check if user is admin
 router.use(auth, admin);
+
+// === NOTUN ROUTE: Get all unique categories ===
+router.get('/categories', async (req, res) => {
+    try {
+        // Database theke shob unique category name ber kora
+        const categories = await Product.distinct('category');
+        res.json({
+            success: true,
+            categories: categories.filter(c => c) // null/empty values baad deya
+        });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+});
+// ============================================
 
 // GET all products (Admin only)
 router.get('/products', async (req, res) => {
@@ -28,10 +74,10 @@ router.get('/products', async (req, res) => {
 });
 
 // POST - Create new product (Admin only)
-// ✅ FIX: Improved Error Handling
-router.post('/products', async (req, res) => {
+// === PORIBORTON: Multer middleware add kora hoyeche (upload.array('images')) ===
+router.post('/products', upload.array('images', 5), async (req, res) => {
     try {
-        const { name, description, price, category, stock, images } = req.body;
+        const { name, description, price, category, stock } = req.body;
 
         if (!name || !description || !price || !category || !stock) {
             return res.status(400).json({
@@ -40,7 +86,15 @@ router.post('/products', async (req, res) => {
             });
         }
 
-        // Automatically set status based on stock
+        // Image path-gulo req.files theke neya
+        let imagePaths = [];
+        if (req.files && req.files.length > 0) {
+            // path-gulo format kora (e.g., /uploads/image-123.jpg)
+            imagePaths = req.files.map(file => `/${file.path.replace(/\\/g, '/')}`);
+        } else {
+            imagePaths = ['https://via.placeholder.com/300'];
+        }
+
         const status = stock > 0 ? 'active' : 'out-of-stock';
 
         const product = new Product({
@@ -49,7 +103,7 @@ router.post('/products', async (req, res) => {
             price,
             category,
             stock,
-            images: images && images.length > 0 ? images.filter(img => img) : ['https://via.placeholder.com/300'],
+            images: imagePaths, // Database-e image path save kora
             status
         });
 
@@ -61,20 +115,20 @@ router.post('/products', async (req, res) => {
             product
         });
     } catch (error) {
-        // ✅ FIX: Send Mongoose validation error instead of generic 500
         console.error('Error creating product:', error);
         res.status(400).json({
             success: false,
-            message: error.message // This will show the exact validation error
+            message: error.message
         });
     }
 });
+// =========================================================================
 
 // PUT - Update product (Admin only)
-// ✅ FIX: Improved Error Handling
-router.put('/products/:id', async (req, res) => {
+// === PORIBORTON: Multer middleware add kora hoyeche ===
+router.put('/products/:id', upload.array('images', 5), async (req, res) => {
     try {
-        const { name, description, price, category, stock, images } = req.body;
+        const { name, description, price, category, stock, existingImages } = req.body;
 
         let product = await Product.findById(req.params.id);
 
@@ -85,7 +139,24 @@ router.put('/products/:id', async (req, res) => {
             });
         }
 
-        // Automatically update status based on stock
+        // Notun image path-gulo req.files theke neya
+        let newImagePaths = [];
+        if (req.files && req.files.length > 0) {
+            newImagePaths = req.files.map(file => `/${file.path.replace(/\\/g, '/')}`);
+        }
+
+        // Purono image (jodi user rekhe dey) ebong notun image path combine kora
+        let allImages = [];
+        if (existingImages) {
+            // ensure existingImages is an array (jodi ekta string ashe)
+            allImages = Array.isArray(existingImages) ? existingImages : [existingImages];
+        }
+        allImages = [...allImages, ...newImagePaths];
+
+        if (allImages.length === 0) {
+            allImages = ['https://via.placeholder.com/300'];
+        }
+
         const status = stock > 0 ? 'active' : 'out-of-stock';
 
         const updatedProduct = await Product.findByIdAndUpdate(
@@ -96,10 +167,10 @@ router.put('/products/:id', async (req, res) => {
                 price,
                 category,
                 stock,
-                images: images && images.length > 0 ? images.filter(img => img) : product.images,
+                images: allImages,
                 status
             },
-            { new: true, runValidators: true } // runValidators ensures enum is checked
+            { new: true, runValidators: true }
         );
 
         res.json({
@@ -108,14 +179,14 @@ router.put('/products/:id', async (req, res) => {
             product: updatedProduct
         });
     } catch (error) {
-        // ✅ FIX: Send Mongoose validation error instead of generic 500
         console.error('Error updating product:', error);
         res.status(400).json({
             success: false,
-            message: error.message // This will show the exact validation error
+            message: error.message
         });
     }
 });
+// =========================================================================
 
 // DELETE - Delete product (Admin only)
 router.delete('/products/:id', async (req, res) => {
@@ -128,6 +199,8 @@ router.delete('/products/:id', async (req, res) => {
                 message: 'Product not found'
             });
         }
+        
+        // TODO: Delete images from 'uploads' folder if necessary
 
         await Product.findByIdAndDelete(req.params.id);
 

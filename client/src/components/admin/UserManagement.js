@@ -2,11 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import './AdminProducts.css'; // একই স্টাইল ব্যবহার করবে
+import './AdminProducts.css';
 
-// ✅ Axios instance তৈরি করুন
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: '/api',
     timeout: 10000,
 });
 
@@ -38,7 +37,6 @@ const UserManagement = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            // ✅ নতুন /api/admin/users রুট ব্যবহার করুন
             const res = await api.get('/admin/users');
             setUsers(res.data.users || []);
         } catch (error) {

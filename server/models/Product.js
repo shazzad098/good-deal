@@ -18,7 +18,10 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Beauty', 'Toys', 'Automotive']
+        // === PORIBORTON EKHANE ===
+        // enum (fixed list) remove kora holo
+        // enum: ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Beauty', 'Toys', 'Automotive']
+        // ==========================
     },
     images: [{
         type: String
