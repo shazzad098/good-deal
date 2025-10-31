@@ -1,3 +1,4 @@
+// client/src/components/layout/Navbar.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,7 +10,7 @@ const Navbar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useSelector(state => state.auth);
-    const { itemCount } = useSelector(state => state.cart); // <-- === কার্ট কাউন্ট যোগ করা হয়েছে ===
+    const { itemCount } = useSelector(state => state.cart);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleLogout = () => {
@@ -30,12 +31,11 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
-            <div className="nav-backdrop"></div>
             <div className="nav-container">
                 <div className="nav-brand">
                     <Link to="/" onClick={closeMenu}>
-                        
-                        <span className="brand-text">Good Deal</span>
+                        <span className="brand-icon">🛍️</span>
+                        <span className="brand-text">GoodDeal</span>
                     </Link>
                 </div>
 
@@ -49,70 +49,60 @@ const Navbar = () => {
                     <span></span>
                 </button>
 
+                {/* === PORIBORTON: Link-guloke main-links ebong auth-links-e vag kora === */}
                 <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-                    <Link to="/" className="nav-link" onClick={closeMenu}>
-                        <span className="nav-icon">🏠</span>
-                        <span className="nav-text">Home</span>
-                    </Link>
-
-                    {!isAdmin && (
-                        <Link to="/products" className="nav-link" onClick={closeMenu}>
-                            <span className="nav-icon">📦</span>
-                            <span className="nav-text">Products</span>
+                    <div className="nav-main-links">
+                        <Link to="/" className="nav-link" onClick={closeMenu}>
+                            Home
                         </Link>
-                    )}
 
-                    {isAuthenticated ? (
-                        <>
-                            {isAdmin && (
-                                <Link to="/admin" className="nav-link admin-link" onClick={closeMenu}>
-                                    <span className="nav-icon">🛠️</span>
-                                    <span className="nav-text">Admin Dashboard</span>
-                                </Link>
+                        {!isAdmin && (
+                            <Link to="/products" className="nav-link" onClick={closeMenu}>
+                                Products
+                            </Link>
+                        )}
+
+                        {isAdmin && (
+                            <Link to="/admin" className="nav-link admin-link" onClick={closeMenu}>
+                                Admin Dashboard
+                            </Link>
+                        )}
+                        
+                        {/* Shobar jonno Cart Link */}
+                        <Link to="/cart" className="nav-link nav-cart-link" onClick={closeMenu}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            <span>Cart</span>
+                            {itemCount > 0 && (
+                                <span className="cart-badge">{itemCount}</span>
                             )}
-                            {/* === পরিবর্তন: কার্ট লিংক ও ব্যাজ === */}
-                            <Link to="/cart" className="nav-link nav-cart-link" onClick={closeMenu}>
-                                <span className="nav-icon">🛒</span>
-                                <span className="nav-text">Cart</span>
-                                {itemCount > 0 && (
-                                    <span className="cart-badge">{itemCount}</span>
-                                )}
-                            </Link>
-                            {/* ================================== */}
-                            <div className="user-section">
-                                <div className="user-avatar">👤</div>
-                                <div className="user-info">
-                                    <div className="user-greeting">Hello,</div>
-                                    <div className="user-name">{user?.name}</div>
+                        </Link>
+                    </div>
+
+                    <div className="nav-auth-actions">
+                        {isAuthenticated ? (
+                            <>
+                                <div className="user-section">
+                                    <span className="user-avatar">👤</span>
+                                    <span className="user-name">{user?.name}</span>
                                 </div>
-                            </div>
-                            <button onClick={handleLogout} className="logout-btn">
-                                <span className="logout-icon">🚪</span>
-                                <span className="logout-text">Logout</span>
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            {/* === পরিবর্তন: কার্ট লিংক ও ব্যাজ (লগআউট অবস্থা) === */}
-                            <Link to="/cart" className="nav-link nav-cart-link" onClick={closeMenu}>
-                                <span className="nav-icon">🛒</span>
-                                <span className="nav-text">Cart</span>
-                                {itemCount > 0 && (
-                                    <span className="cart-badge">{itemCount}</span>
-                                )}
-                            </Link>
-                            {/* ================================== */}
-                            <Link to="/login" className="nav-link login-link" onClick={closeMenu}>
-                                <span className="nav-icon">🔐</span>
-                                <span className="nav-text">Login</span>
-                            </Link>
-                            <Link to="/register" className="nav-link register-link" onClick={closeMenu}>
-                                <span className="nav-icon">📝</span>
-                                <span className="nav-text">Register</span>
-                            </Link>
-                        </>
-                    )}
+                                <button onClick={handleLogout} className="btn-logout">
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/login" className="btn btn-secondary" onClick={closeMenu}>
+                                    Login
+                                </Link>
+                                <Link to="/register" className="btn btn-primary" onClick={closeMenu}>
+                                    Register
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
+                {/* =================================================================== */}
+
             </div>
 
             <Alert />

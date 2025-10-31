@@ -1,23 +1,37 @@
 /* client/src/components/layout/Navbar.css */
 
+/* === Notun Professional Theme === */
+:root {
+    --nav-primary-color: #059669; /* Site primary color (Emerald) */
+    --nav-primary-dark: #047857;  /* Darker emerald */
+    --nav-text-primary: #111827;   /* gray-900 */
+    --nav-text-secondary: #4B5563; /* gray-600 */
+    --nav-border-color: #e5e7eb;   /* gray-200 */
+    --nav-bg-color: #ffffff;
+    --nav-danger-color: #DC2626;  /* Red for logout */
+    --nav-height: 70px;
+    --nav-transition: all 0.3s ease;
+}
+
 /* === Base Navbar Styles === */
 .navbar {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(30, 30, 30, 0.65); /* Slightly darker for better contrast */
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--nav-bg-color);
+    border-bottom: 1px solid var(--nav-border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     padding: 0;
+    height: var(--nav-height);
+    /* Purono backdrop-filter remove kora holo */
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 30px;
-    height: 80px;
+    padding: 0 24px; /* Desktop padding */
+    height: 100%;
     max-width: 1400px;
     margin: 0 auto;
     position: relative;
@@ -25,106 +39,47 @@
 
 /* === Brand/Logo Styles === */
 .nav-brand a {
-    color: white;
+    color: var(--nav-text-primary);
     text-decoration: none;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    font-family: 'Segoe UI', system-ui, sans-serif;
     display: flex;
     align-items: center;
     gap: 10px;
     z-index: 1001;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.brand-icon {
+    font-size: 28px;
+}
+
+/* brand-text er gradient remove kore clean look */
 .brand-text {
-    background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.nav-cart-link {
-    position: relative;
-}
-
-.cart-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #F97316; /* Orange-600 */
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-/* === Hamburger Menu (Mobile Only) === */
-.hamburger {
-    display: none; /* Hidden on desktop */
-    flex-direction: column;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    cursor: pointer;
-    padding: 8px;
-    z-index: 1001; /* Must be above nav-links in mobile view */
-    transition: all 0.3s ease;
-}
-
-.hamburger:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
-}
-
-.hamburger span {
-    width: 22px;
-    height: 2px;
-    background: white;
-    margin: 3px 0;
-    transition: 0.3s;
-    border-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Hamburger active state (cross icon) */
-.hamburger.active {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.hamburger.active span:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
-}
-
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
+    color: var(--nav-text-primary);
 }
 
 /* === Navigation Links (Desktop) === */
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
-    transition: all 0.3s ease;
+    gap: 30px;
+    transition: var(--nav-transition);
+    height: 100%;
+}
+
+.nav-main-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    height: 100%;
 }
 
 .nav-link {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--nav-text-secondary);
     text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.25s ease;
+    padding: 0 4px; /* Padding for hover effect */
+    border-radius: 0;
+    transition: var(--nav-transition);
     font-weight: 500;
     font-size: 15px;
     white-space: nowrap;
@@ -134,186 +89,278 @@
     background: transparent;
     border: none;
     text-shadow: none;
+    height: 100%;
+    border-bottom: 2px solid transparent; /* Hover effect er base */
 }
 
 .nav-link:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--nav-primary-color);
+    border-bottom-color: var(--nav-primary-color); /* Bottom border hover */
+    background: none;
 }
 
-.nav-icon {
-    font-size: 15px;
-    opacity: 0.9;
-}
-
-/* Special links styling */
-.admin-link,
-.login-link,
-.register-link {
-    background: transparent;
-    border: none;
+.nav-link.admin-link {
+    color: var(--nav-primary-color);
     font-weight: 600;
 }
 
-.admin-link { color: #FFA726; }
-.admin-link:hover { color: #FF9800; background: rgba(255, 167, 38, 0.1); }
+/* Cart Link */
+.nav-cart-link {
+    position: relative;
+}
 
-.login-link { color: #4CAF50; }
-.login-link:hover { color: #43A047; background: rgba(76, 175, 80, 0.1); }
+.nav-cart-link svg {
+    transition: var(--nav-transition);
+}
 
-.register-link { color: #607D8B; }
-.register-link:hover { color: #546E7A; background: rgba(96, 125, 139, 0.1); }
+.nav-cart-link:hover svg {
+    stroke: var(--nav-primary-color);
+}
 
-/* === User Section === */
-.user-section {
+.cart-badge {
+    position: absolute;
+    top: 20px; /* Position adjust kora */
+    right: -10px;
+    background: var(--nav-primary-color);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid white;
+}
+
+/* === Auth Buttons & User Section === */
+.nav-auth-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 20px;
+    margin-left: 20px;
+    border-left: 1px solid var(--nav-border-color);
 }
 
-.user-avatar { font-size: 20px; }
-.user-info { display: flex; flex-direction: column; }
-.user-greeting { color: rgba(255, 255, 255, 0.8); font-size: 12px; }
-.user-name { color: white; font-size: 14px; font-weight: 600; }
-
-.logout-btn {
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.2));
-    color: white;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-    padding: 12px 20px;
-    border-radius: 12px;
+/* Notun Button Style */
+.btn-primary, .btn-secondary {
+    padding: 8px 16px;
+    border: 1px solid var(--nav-primary-color);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    font-size: 15px;
+    transition: var(--nav-transition);
+    text-decoration: none;
+}
+.btn-primary {
+    background: var(--nav-primary-color);
+    color: white;
+}
+.btn-primary:hover {
+    background: var(--nav-primary-dark);
+    border-color: var(--nav-primary-dark);
+}
+.btn-secondary {
+    background: transparent;
+    color: var(--nav-primary-color);
+}
+.btn-secondary:hover {
+    background: var(--nav-primary-color);
+    color: white;
+}
+
+/* User Section */
+.user-section {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.logout-btn:hover {
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.3));
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
-    border-color: rgba(231, 76, 60, 0.5);
+.user-avatar { 
+    font-size: 20px; 
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--nav-border-color);
+    color: var(--nav-text-secondary);
+    display: grid;
+    place-items: center;
+}
+.user-name { 
+    color: var(--nav-text-primary); 
+    font-size: 15px; 
+    font-weight: 600; 
 }
 
-.logout-icon { font-size: 16px; }
+/* Logout Button */
+.btn-logout {
+    background: transparent;
+    color: var(--nav-danger-color);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--nav-transition);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.btn-logout:hover {
+    background: #FEF2F2; /* danger-light */
+    color: #B91C1C; /* danger-dark */
+}
+
+/* === Hamburger Menu (Mobile Only) === */
+.hamburger {
+    display: none; /* Hidden on desktop */
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+    transition: var(--nav-transition);
+    width: 30px;
+    height: 30px;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 2px;
+    background: var(--nav-text-primary);
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+/* Hamburger active state (cross icon) */
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+}
 
 /* === Mobile Overlay === */
 .nav-overlay {
     display: none; /* Hidden by default */
     position: fixed;
-    top: 0;
+    top: var(--nav-height); /* Navbar er niche theke shuru */
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - var(--nav-height));
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    z-index: 999; /* Below the nav-links, above page content */
+    z-index: 999;
     opacity: 0;
     transition: opacity 0.4s ease;
 }
 
 .nav-overlay.active {
-    display: block; /* Made visible with JS */
+    display: block;
     opacity: 1;
 }
 
-/* === Mobile Responsive Styles (max-width: 768px) === */
-/* Mobile Responsive - Solid Background */
-@media (max-width: 768px) {
-    .navbar {
-        background: #1e1e1e; /* <== পরিবর্তন: সলিড ডার্ক ব্যাকগ্রাউন্ড */
-        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
-        -webkit-backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
-        border-bottom: 1px solid #333; /* <== পরিবর্তন: সলিড বর্ডার */
-    }
-
+/* === Mobile Responsive Styles (max-width: 992px) === */
+@media (max-width: 992px) {
     .nav-container {
-        padding: 0 20px;
-        height: 70px;
-    }
-
-    .nav-brand a {
-        font-size: 24px;
+        padding: 0 16px; /* Mobile padding */
     }
 
     .hamburger {
         display: flex;
-        background: #333; /* <== পরিবর্তন: সলিড বাটন ব্যাকগ্রাউন্ড */
-        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
-        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
     }
 
-    .hamburger:hover,
-    .hamburger.active {
-        background: #444; /* <== পরিবর্তন: সলিড হোভার/অ্যাক্টিভ ব্যাকগ্রাউন্ড */
-    }
-
+    /* Mobile Menu Container */
     .nav-links {
         position: fixed;
-        top: 0;
+        top: var(--nav-height); /* Navbar er thik niche theke */
         right: -320px; 
         width: 320px;
-        height: 100vh;
-        background: #1e1e1e; /* <== পরিবর্তন: সলিড ডার্ক ব্যাকগ্রাউন্ড */
-        backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
-        -webkit-backdrop-filter: none; /* <== পরিবর্তন: গ্লাস ইফেক্ট রিমুভ */
-        border-left: 1px solid #333; /* <== পরিবর্তন: সলিড বর্ডার */
+        max-width: 90%;
+        height: calc(100vh - var(--nav-height));
+        background: var(--nav-bg-color);
+        border-left: 1px solid var(--nav-border-color);
         flex-direction: column;
         justify-content: flex-start;
-        align-items: flex-start;
-        padding: 90px 25px 30px;
-        gap: 15px;
+        align-items: stretch; /* Full width links */
+        padding: 20px;
+        gap: 0;
         transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
+        overflow-y: auto;
     }
 
     .nav-links.active {
         right: 0;
     }
+    
+    .nav-main-links {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        height: auto;
+        border-bottom: 1px solid var(--nav-border-color);
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+    }
 
     .nav-link {
-        padding: 16px 20px;
-        width: 100%;
-        border-radius: 12px;
+        padding: 14px 12px;
         font-size: 16px;
-        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
-        background: #2f2f2f; /* <== পরিবর্তন: সলিড লিংক ব্যাকগ্রাউন্ড */
+        height: auto;
+        border-bottom: none; /* Mobile e hover effect remove */
     }
-
     .nav-link:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-}
+        color: var(--nav-primary-color);
+        background: #f9fafb; /* gray-50 */
+        border-bottom-color: transparent;
+    }
 
+    .cart-badge {
+        top: 10px;
+        right: 12px;
+    }
+
+    /* Mobile Auth Section */
+    .nav-auth-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding-left: 0;
+        margin-left: 0;
+        border-left: none;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        text-align: center;
+    }
+    
     .user-section {
-        width: 100%;
-        margin: 10px 0;
-        background: #2f2f2f; /* <== পরিবর্তন: সলিড ব্যাকগ্রাউন্ড */
-        border: 1px solid #444; /* <== পরিবর্তন: সলিড বর্ডার */
-    }
-
-    .logout-btn {
-        width: 100%;
-        padding: 16px;
-        font-size: 16px;
-        margin-top: 10px;
+        padding: 10px 12px;
+        background: #f9fafb; /* gray-50 */
+        border-radius: 8px;
         justify-content: center;
-        /* লগআউট বাটন আগের মতোই রেড-টিন্ট থাকবে */
     }
-
-    .nav-overlay { 
-        display: none; 
-        /* ওভারলে ব্লার ঠিক আছে, কারণ এটি মেনুর পেছনে থাকে */
+    
+    .btn-logout {
+        padding: 12px;
+        background: #FEF2F2; /* danger-light */
+        color: var(--nav-danger-color);
+        text-align: center;
     }
-
-    .nav-overlay.active {
-        display: block; 
+    .btn-logout:hover {
+        color: #B91C1C; /* danger-dark */
     }
 }
