@@ -7,11 +7,11 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS setup
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+    origin: ['http://localhost:3000', 'https://gooddeal-bd.com/'],
+    credentials: true,
 }));
+
 
 app.use(express.json());
 
